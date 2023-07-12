@@ -6,10 +6,16 @@ class Seccion(models.Model):
     num_seccion = models.IntegerField()
     departamento = models.CharField()
 
+    def __str__(self):
+        return self.num_seccion + " - " + self.departamento
+
 class Circuito(models.Model):
-    numero = models.IntegerField()
+    num_circuito = models.IntegerField()
     localidad = models.CharField(max_length=100)
     seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
+    
+    def __str__(self):
+        return self.num_circuito + " - " + self.seccion
 
 class Escuela(models.Model):
     nombre = models.CharField(max_length=100)
