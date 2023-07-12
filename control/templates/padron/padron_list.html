@@ -1,0 +1,55 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+
+<br>
+<h1>Padron {{circuito.localidad}}</h1>
+<div class="btn-toolbar float-end">
+    <div class="btn-group mr-2">
+        <input class="form-control" id="filterPersona" type="text" placeholder="Buscar..">    
+    </div>
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col" class="col-3">Apellido y nombre</th>
+            <th scope="col" class="col-3">Domicilio</th>
+            <th scope="col" class="col-1">Clase</th>
+            <th scope="col" class="col-4">Lugar</th>
+            <th scope="col" class="col-1">Voto</th>
+        </tr>
+    </thead>
+    <tbody id="listPersona">
+        {% for personas in persona_list %}
+        <tr>
+            <td>{{personas.apellido}}, {{personas.nombre}}</td>
+            <td>{{personas.domicilio}}</td>
+            <td>{{personas.clase}}</td>
+            <td>{{personas.mesa.escuela.nombre}} - Mesa: {{personas.mesa.num_mesa}} (Ord: {{personas.num_orden}})</td>
+            <td>
+                {% if personas.voto %}
+                <a class="btn" style="background-color: #468B97; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-check-lg"></i></a>
+                {% else %}
+                <a class="btn" style="background-color: #EF6262; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-x-lg"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+      $("#filterPersona").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#listPersona tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+</script>
+
+{% endblock %}

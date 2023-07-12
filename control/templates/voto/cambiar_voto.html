@@ -1,0 +1,16 @@
+{% extends 'control_base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<br>
+<h2>Cargar voto en mesa {{ mesa.num_mesa}}</h2>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Guardar Voto</button>
+</form>
+
+{% endblock %}

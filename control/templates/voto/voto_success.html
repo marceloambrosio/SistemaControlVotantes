@@ -1,0 +1,19 @@
+{% extends 'control_base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<br>
+
+<h2>Voto cargado</h2>
+
+<p>Mesa N: {{ mesa.num_mesa }}</p>
+<p>Número de Orden: {{ persona.num_orden }}</p>
+<p>{{ persona.apellido }} {{ persona.nombre }}</p>
+<p>DNI: {{ persona.dni }}</p>
+
+
+<a href="{% url 'cambiar_voto' mesa_id=mesa.pk %}">Volver</a>
+
+{% endblock %}

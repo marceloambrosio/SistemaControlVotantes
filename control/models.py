@@ -31,6 +31,9 @@ class Mesa(models.Model):
 
     def __str__(self):
         return "Mesa Nº " + str(self.num_mesa)
+    
+    def calcular_cantidad_personas(self):
+        return self.persona_set.count()
 
 class Persona(models.Model):
     id = models.AutoField(primary_key=True)
