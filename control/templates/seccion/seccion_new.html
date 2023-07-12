@@ -1,0 +1,34 @@
+{% extends 'control_base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<br>
+<h1>Cargar nueva persona</h1>
+
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">Agregar seccion</h5>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="mb-3">
+        <div class="row">
+          <div class="col-6">
+            <label class="form-label">Numero</label>
+            {{ form.num_seccion }}
+          </div>
+          <div class="col-6">
+            <label class="form-label">Departamento</label>
+            {{ form.departamento }}
+          </div>
+        </div>
+        </div>
+      </div>
+      <button class="btn float-end" style="background-color: #BFACE2">Guardar</button>
+    </form>
+    <button class="btn float-end" style="background-color: #EEEEEE" onclick="location.href='/expedientes/persona_index'">Volver</button>
+  </div>
+</div>
+
+{% endblock %}

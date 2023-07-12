@@ -7,7 +7,7 @@ class Seccion(models.Model):
     departamento = models.CharField()
 
     def __str__(self):
-        return self.num_seccion + " - " + self.departamento
+        return str(self.num_seccion).zfill(2) + " - " + self.departamento
 
 class Circuito(models.Model):
     num_circuito = models.IntegerField()
@@ -15,37 +15,36 @@ class Circuito(models.Model):
     seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
     
     def __str__(self):
-        return self.num_circuito + " - " + self.seccion
+        return str(self.num_circuito).zfill(4) + " - " + self.localidad
 
 class Escuela(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=100)
+    circuito = models.ForeignKey(Circuito, on_delete=models.PROTECT)
     
     def __str__(self):
         return self.nombre + " (" + self.direccion + ")"
     
 class Mesa(models.Model):
-    num_mesa = models.IntegerField()
+    num_mesa = models.IntegerField(primary_key=True)
     escuela = models.ForeignKey(Escuela, on_delete=models.PROTECT)
-    circuito = models.ForeignKey(Circuito, on_delete=models.PROTECT)
 
     def __str__(self):
-        return "Mesa Nº " + self.num_mesa
+        return "Mesa Nº " + str(self.num_mesa)
 
 class Persona(models.Model):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    dni = models.IntegerField()
-    domiculio = models.CharField(max_length=100)
-    clase = models.IntegerField()
-
-    def __str__(self):
-        return self.apellido + ", " + self.nombre + " - DNI: " + str(self.dni)
-
-class PadronMesa(models.Model):
-    mesa = models.ForeignKey(Mesa, on_delete=models.PROTECT)
+    id = models.AutoField(primary_key=True)
     num_orden = models.IntegerField()
-    persona = models.ForeignKey(Persona, on_delete=models.PROTECT)
+    dni = models.IntegerField()
+    apellido = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100)
+    clase = models.IntegerField()
+    domicilio = models.CharField(max_length=100)
+    mesa = models.ForeignKey(Mesa, on_delete=models.PROTECT)
+    voto = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('dni', 'apellido', 'nombre','num_orden')
 
     def __str__(self):
-        return self.num_orden + " - " + self.persona.apellido + self.persona.nombre + " - " + self.persona.dni
+        return str(self.num_orden).zfill(3) + " - " + self.apellido + ", " + self.nombre + " - DNI: " + str(self.dni) + " - Mesa Nº " + str(self.mesa.num_mesa)
