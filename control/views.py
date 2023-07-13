@@ -40,6 +40,13 @@ class PadronListView(ListView):
     template_name = 'padron/padron_list.html'
     ordering = ['apellido', 'nombre','clase']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        circuito_id = self.kwargs['circuito_id']  # Obtener el ID del circuito de los parámetros de la URL
+        return queryset.filter(mesa__escuela__circuito_id=circuito_id)
+    
+    
+
 def cambiar_voto(request, mesa_id):
     mesa = get_object_or_404(Mesa, pk=mesa_id)
 
