@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import VotoForm
+from .forms import VotoForm, NumeroMesaForm
 from .models import Persona, Mesa
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import ListView
@@ -13,7 +13,7 @@ def index(request):
 class PadronDatatableView(BaseDatatableView):
     model = Persona
     columns = ('apellido', 'nombre', 'dni', 'clase', 'mesa.num_mesa','mesa.escuela.nombre','voto')
-    order_columns = ['apellido', 'nombre','clase']
+    order_columns = ['voto','apellido', 'nombre','clase']
 
     def get_initial_queryset(self):
         return Persona.objects.all()
@@ -53,3 +53,24 @@ def cambiar_voto(request, mesa_id):
         form = VotoForm()
 
     return render(request, 'voto/cambiar_voto.html', {'form': form, 'mesa': mesa})
+
+def solicitar_numero_mesa(request):
+    if request.method == 'POST':
+        form = NumeroMesaForm(request.POST)
+        if form.is_valid():
+            numero_mesa = form.cleaned_data['numero_mesa']
+            mesa = Mesa.objects.filter(num_mesa=numero_mesa).first()
+            if mesa:
+                return redirect('cambiar_voto', mesa_id=numero_mesa)
+            else:
+                return redirect('mesa_no_existe')
+    else:
+        form = NumeroMesaForm()
+    
+    context = {
+        'form': form
+    }
+    return render(request, 'mesa/solicitar_numero_mesa.html', context)
+
+def mesa_no_existe(request):
+    return render(request, 'mesa/mesa_no_existe.html')

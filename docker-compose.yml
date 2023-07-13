@@ -9,8 +9,8 @@ services:
       POSTGRES_USER: computos
       POSTGRES_PASSWORD: v0t4nt3s
     volumes:
-      - /Users/marceloambrosio/Documents/DockerVolumes/control_votantes:/var/lib/postgresql/data
-      #- D:\Users\marce\Documents\DockerVolumes\control_votantes:/var/lib/postgresql/data
+      #- /Users/marceloambrosio/Documents/DockerVolumes/control_votantes:/var/lib/postgresql/data
+      - D:\Users\marce\Documents\DockerVolumes\control_votantes:/var/lib/postgresql/data
 
 volumes:
   postgres_data:

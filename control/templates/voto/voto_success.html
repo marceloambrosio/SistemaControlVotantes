@@ -5,15 +5,36 @@
 {% block content %}
 
 <br>
+<div class="container">
+<h2 class="text-center">¡Voto cargado! <a class="btn" style="background-color: #468B97; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-check-lg"></i></a></h2>
+<br>
 
-<h2>Voto cargado</h2>
+<div class="row">
+    <div class="col-sm-8 offset-sm-2">
+<table class="table table-bordered">
+    <tbody>
+      <tr>
+        <th>Mesa Nº</th>
+        <td>{{ mesa.num_mesa }}</td>
+      </tr>
+      <tr>
+        <th>Número de Orden</th>
+        <td>{{ persona.num_orden }}</td>
+      </tr>
+      <tr>
+        <th>Apellido y Nombre</th>
+        <td>{{ persona.apellido }} {{ persona.nombre }}</td>
+      </tr>
+      <tr>
+        <th>DNI</th>
+        <td>{{ persona.dni }}</td>
+      </tr>
+    </tbody>
+  </table>
 
-<p>Mesa N: {{ mesa.num_mesa }}</p>
-<p>Número de Orden: {{ persona.num_orden }}</p>
-<p>{{ persona.apellido }} {{ persona.nombre }}</p>
-<p>DNI: {{ persona.dni }}</p>
 
-
-<a href="{% url 'cambiar_voto' mesa_id=mesa.pk %}">Volver</a>
-
+<button class="btn float-end" style="background-color: #468B97" onclick="location.href='{% url 'cambiar_voto' mesa_id=mesa.pk %}'">Volver</button>
+</div>
+</div>
+</div>
 {% endblock %}
