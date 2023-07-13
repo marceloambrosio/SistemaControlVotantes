@@ -45,14 +45,20 @@ def cambiar_voto(request, mesa_id):
         form = VotoForm(request.POST)
         if form.is_valid():
             num_orden = form.cleaned_data['num_orden']
-            persona = get_object_or_404(Persona, num_orden=num_orden, mesa=mesa)
-            persona.voto = True
-            persona.save()
-            return render(request, 'voto/voto_success.html', {'mesa': mesa, 'persona': persona})
+            persona = Persona.objects.filter(num_orden=num_orden, mesa=mesa).first()
+            if persona:
+                persona.voto = True
+                persona.save()
+                return render(request, 'voto/voto_success.html', {'mesa': mesa, 'persona': persona})
+            else:
+                return render(request, 'voto/voto_no_existe.html', {'mesa_id': mesa_id, 'num_orden': num_orden})
     else:
         form = VotoForm()
 
     return render(request, 'voto/cambiar_voto.html', {'form': form, 'mesa': mesa})
+
+def voto_no_existe(request):
+    return render(request, 'voto/voto_no_existe.html')
 
 def solicitar_numero_mesa(request):
     if request.method == 'POST':
@@ -74,3 +80,4 @@ def solicitar_numero_mesa(request):
 
 def mesa_no_existe(request):
     return render(request, 'mesa/mesa_no_existe.html')
+

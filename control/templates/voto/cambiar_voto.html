@@ -15,7 +15,7 @@
   {% csrf_token %}
   {{ form.as_p }}
   <button class="btn float-end" style="background-color: #468B97">Actualizar voto</button>
-  <button class="btn float-end" style="background-color: #EF6262" onclick="location.href='{% url 'solicitar_numero_mesa' %}'">Volver</button>
+  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'solicitar_numero_mesa' %}'">Volver</button>
 </form>
 </div>
 </div>
