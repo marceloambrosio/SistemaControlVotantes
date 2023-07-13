@@ -9,4 +9,5 @@ urlpatterns = [
     path('voto_no_existe/', voto_no_existe, name='voto_no_existe'),
     path('mesa/<int:mesa_id>/cambiar-voto/', cambiar_voto, name='cambiar_voto'),
     path('mesa_no_existe/', mesa_no_existe, name='mesa_no_existe'),
+    path('circuito/<int:circuito_id>/', views.CircuitoDetailView.as_view(), name='circuito_detail'),
 ]

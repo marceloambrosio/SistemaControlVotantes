@@ -1,0 +1,38 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+
+<br>
+<h2>Circuito {{ circuito.num_circuito }} - {{ circuito.localidad }} ({{ circuito.seccion.departamento }})</h2>
+<br>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col" class="col-5">Mesa</th>
+      <th scope="col" class="col-2">Cant Personas</th>
+      <th scope="col" class="col-2">Cant Votos</th>
+      <th scope="col" class="col-3">Porcentaje de Votos</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for mesa in mesas %}
+    <tr>
+      <td>{{ mesa.num_mesa }} - {{ mesa.escuela.nombre }} ({{ mesa.escuela.direccion }})</td>
+      <td>{{ mesa.persona_set.count }}</td>
+      <td>{{ mesa.votos_count }}</td>
+      <td><div class="progress">
+        {% if mesa.porcentaje_votos < 30 %}
+          <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #EF6262;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+        {% elif mesa.porcentaje_votos < 60 %}
+          <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #F3AA60;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+        {% else %}
+          <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #468B97;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+        {% endif %}
+      </div>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

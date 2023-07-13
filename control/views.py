@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import VotoForm, NumeroMesaForm
-from .models import Persona, Mesa
+from .models import Persona, Mesa, Circuito
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import ListView
 from datetime import datetime
+from django.db.models import Count,Q
+from django.views import View
 
 # Create your views here.
 
@@ -81,3 +83,18 @@ def solicitar_numero_mesa(request):
 def mesa_no_existe(request):
     return render(request, 'mesa/mesa_no_existe.html')
 
+class CircuitoDetailView(View):
+    def get(self, request, circuito_id):
+        circuito = get_object_or_404(Circuito, pk=circuito_id)
+        mesas = Mesa.objects.filter(escuela__circuito=circuito).annotate(votos_count=Count('persona', filter=Q(persona__voto=True)))
+
+        for mesa in mesas:
+            persona_count = mesa.persona_set.count()
+            mesa.porcentaje_votos = round(mesa.votos_count / persona_count * 100, 2)
+
+        context = {
+            'circuito': circuito,
+            'mesas': mesas
+        }
+        return render(request, 'circuito/circuito_detail.html', context)
+    

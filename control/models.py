@@ -3,14 +3,14 @@ from django.db import models
 # Create your models here.
 
 class Seccion(models.Model):
-    num_seccion = models.IntegerField()
+    num_seccion = models.IntegerField(primary_key=True)
     departamento = models.CharField()
 
     def __str__(self):
         return str(self.num_seccion).zfill(2) + " - " + self.departamento
 
 class Circuito(models.Model):
-    num_circuito = models.IntegerField()
+    num_circuito = models.IntegerField(primary_key=True)
     localidad = models.CharField(max_length=100)
     seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
     
