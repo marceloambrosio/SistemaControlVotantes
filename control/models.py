@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
@@ -30,7 +31,7 @@ class Mesa(models.Model):
     escuela = models.ForeignKey(Escuela, on_delete=models.PROTECT)
 
     def __str__(self):
-        return "Mesa Nº " + str(self.num_mesa)
+        return "Mesa Nº " + str(self.num_mesa).zfill(4) + " - " + self.escuela.circuito.localidad
     
     def calcular_cantidad_personas(self):
         return self.persona_set.count()
@@ -50,4 +51,10 @@ class Persona(models.Model):
         unique_together = ('dni', 'apellido', 'nombre','num_orden')
 
     def __str__(self):
-        return str(self.num_orden).zfill(3) + " - " + self.apellido + ", " + self.nombre + " - DNI: " + str(self.dni) + " - Mesa Nº " + str(self.mesa.num_mesa)
+        return str(self.num_orden).zfill(3) + " - " + self.apellido + ", " + self.nombre + " - DNI: " + str(self.dni) + " - Mesa Nº " + str(self.mesa.num_mesa).zfill(4) + " - " + self.mesa.escuela.circuito.localidad
+    
+class User(AbstractUser):
+    circuitos = models.ManyToManyField(Circuito, blank=True)
+
+    def __str__(self):
+        return self.username

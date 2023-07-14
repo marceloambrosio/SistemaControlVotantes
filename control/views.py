@@ -6,11 +6,15 @@ from django.views.generic import ListView
 from datetime import datetime
 from django.db.models import Count,Q
 from django.views import View
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 
 def index(request):
-    return render(request, 'index_control.html')
+    circuitos = request.user.circuitos.all()
+    context = {'circuitos': circuitos}
+    return render(request, 'index_control.html', context)
 
 class PadronDatatableView(BaseDatatableView):
     model = Persona
@@ -42,8 +46,8 @@ class PadronListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        circuito_id = self.kwargs['circuito_id']  # Obtener el ID del circuito de los parámetros de la URL
-        return queryset.filter(mesa__escuela__circuito_id=circuito_id)
+        circuitos = self.request.user.circuitos.all()
+        return queryset.filter(mesa__escuela__circuito__in=circuitos)
     
     
 
@@ -91,6 +95,10 @@ def mesa_no_existe(request):
     return render(request, 'mesa/mesa_no_existe.html')
 
 class CircuitoDetailView(View):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, circuito_id):
         circuito = get_object_or_404(Circuito, pk=circuito_id)
         mesas = Mesa.objects.filter(escuela__circuito=circuito).annotate(votos_count=Count('persona', filter=Q(persona__voto=True)))
@@ -105,3 +113,32 @@ class CircuitoDetailView(View):
         }
         return render(request, 'circuito/circuito_detail.html', context)
     
+    def get(self, request, circuito_id):
+        circuito = get_object_or_404(Circuito, pk=circuito_id)
+        if circuito in request.user.circuitos.all():
+            # El usuario tiene acceso al circuito, continúa con la lógica de la vista
+            mesas = Mesa.objects.filter(escuela__circuito=circuito).annotate(votos_count=Count('persona', filter=Q(persona__voto=True)))
+
+            for mesa in mesas:
+                persona_count = mesa.persona_set.count()
+                mesa.porcentaje_votos = round(mesa.votos_count / persona_count * 100, 2)
+
+            context = {
+                'circuito': circuito,
+                'mesas': mesas
+            }
+            return render(request, 'circuito/circuito_detail.html', context)
+        else:
+            # El usuario no tiene acceso al circuito, redirige a una página de error o realiza otra acción apropiada
+            return render(request, 'circuito/circuito_access_denied.html')
+    
+def circuito_access_denied(request):
+    return render(request, 'circuito/circuito_access_denied.html')
+
+
+class CircuitosHabilitadosView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        circuitos = request.user.circuitos.all()
+        context = {'circuitos': circuitos}
+        return render(request, 'circuito/circuito_habilitado.html', context)

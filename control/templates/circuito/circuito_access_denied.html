@@ -1,0 +1,18 @@
+{% extends 'control_base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<br>
+<div class="container">
+<h2 class="text-center"><a class="btn" style="background-color: #EF6262; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-x-lg"></i></a></h2>
+<h1 class="text-center">¡Acceso denegado!</h1>
+<h6 class="text-center">No tienes permiso para ingresar al número de circuito proporcionado. Por favor, vuelva al inicio.</h6>
+
+<button class="btn float-end" style="background-color: #468B97" onclick="location.href='{% url 'index_control' %}'">Volver</button>
+
+</div>
+</div>
+
+{% endblock %}
