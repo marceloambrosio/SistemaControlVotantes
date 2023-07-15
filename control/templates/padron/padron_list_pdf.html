@@ -4,16 +4,17 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Padron List PDF</title>
+    <title>{{ localidad }} - Mesa {{ num_mesa }}</title>
     <link rel="stylesheet" href="{% static 'styles/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 </head>
 <body>
-    <div class="padron-header">
-        <h1>Padron Mesa Nº {{ num_mesa }} - {{ localidad }} </h1>
-    </div>
 
-    <table class="table table-bordered">
+        <h1>Circuito Nº {{ circuito_id }} - {{ localidad }}</h1>
+        <h2>Padron Mesa Nº {{ num_mesa }}</h2>
+
+
+    <table class="table table-bordered" style="width: 100%;">
         <thead>
             <tr>
                 <th scope="col" class="col-3">Apellido y nombre</th>

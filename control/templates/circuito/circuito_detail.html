@@ -3,7 +3,15 @@
 {% block content %}
 
 <br>
-<h2>Circuito {{ circuito.num_circuito }} - {{ circuito.localidad }} ({{ circuito.seccion.departamento }})</h2>
+
+<div class="padron-header">
+  <h2>Circuito {{ circuito.num_circuito }} - {{ circuito.localidad }} ({{ circuito.seccion.departamento }})</h2>
+  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuitos_habilitados' %}'">Volver</button>
+  <a class="btn" style="background-color: #468B97" href="{% url 'exportar_pdf_personas_sin_voto' circuito_id=circuito_id %}" target="_blank">Exportar PDF</a>
+
+</div>
+
+
 <br>
 
 <table class="table table-hover">
@@ -40,6 +48,13 @@
 {% endfor %}
   </tbody>
 </table>
-<button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuitos_habilitados' %}'">Volver</button>
+
+<style>
+  .padron-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+</style>
 
 {% endblock %}

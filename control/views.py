@@ -134,6 +134,7 @@ class CircuitoDetailView(View):
             form = NumeroMesaForm()
             context = {
                 'circuito': circuito,
+                'circuito_id': circuito_id,  # Agrega circuito_id al contexto
                 'mesas': mesas,
                 'form': form
             }
@@ -166,3 +167,27 @@ class CircuitosHabilitadosView(View):
         circuitos = request.user.circuitos.all()
         context = {'circuitos': circuitos}
         return render(request, 'circuito/circuito_habilitado.html', context)
+    
+class ExportarPDFPersonasSinVotoView(View):
+    def get(self, request, circuito_id):
+        circuito = get_object_or_404(Circuito, pk=circuito_id)
+        personas = Persona.objects.filter(mesa__escuela__circuito=circuito, voto=False)
+        cantidad_personas = personas.count()
+        context = {
+            'persona_list': personas,
+            'circuito': circuito,
+            'cantidad_personas': cantidad_personas,
+        }
+
+        # Renderiza el contenido de la tabla a HTML utilizando el template
+        html_string = render_to_string('padron/exportar_pdf_personas_sin_voto.html', context)
+
+        # Crea un objeto WeasyPrint a partir del HTML
+        pdf = weasyprint.HTML(string=html_string).write_pdf()
+
+        # Devuelve el PDF como respuesta
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'filename="personas_sin_voto.pdf"'
+        response.write(pdf)
+
+        return response
