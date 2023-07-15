@@ -24,7 +24,7 @@ class Escuela(models.Model):
     circuito = models.ForeignKey(Circuito, on_delete=models.PROTECT)
     
     def __str__(self):
-        return self.nombre + " (" + self.direccion + ")"
+        return self.nombre + " (" + self.direccion + ") - " + self.circuito.localidad + " (" + self.circuito.seccion.departamento + ")"
     
 class Mesa(models.Model):
     num_mesa = models.IntegerField(primary_key=True)

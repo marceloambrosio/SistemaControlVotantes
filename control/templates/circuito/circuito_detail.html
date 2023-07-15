@@ -9,10 +9,11 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th scope="col" class="col-5">Mesa</th>
+      <th scope="col" class="col-4">Mesa</th>
       <th scope="col" class="col-2">Cant Personas</th>
-      <th scope="col" class="col-2">Cant Votos</th>
+      <th scope="col" class="col-1">Cant Votos</th>
       <th scope="col" class="col-3">Porcentaje de Votos</th>
+      <th scope="col" class="col-2">Acciones</th>
     </tr>
   </thead>
   <tbody>
@@ -23,13 +24,18 @@
       <td>{{ mesa.votos_count }}</td>
       <td><div class="progress">
         {% if mesa.porcentaje_votos < 30 %}
-          <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #EF6262;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
-        {% elif mesa.porcentaje_votos < 60 %}
-          <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #F3AA60;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
-        {% else %}
-          <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #468B97;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
-        {% endif %}
-      </div>
+      <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #EF6262;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+    {% elif mesa.porcentaje_votos < 60 %}
+      <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #F3AA60;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+    {% elif mesa.porcentaje_votos == 100 %}
+      <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #5DB75D;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+    {% else %}
+      <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #468B97;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+    {% endif %}
+      </div></td>
+      <td>
+        <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'padron_list' circuito_id=mesa.escuela.circuito.num_circuito num_mesa=mesa.num_mesa %}'">Ver padron</button>
+      </td>
     </tr>
 {% endfor %}
   </tbody>

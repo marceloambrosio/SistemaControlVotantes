@@ -3,7 +3,10 @@
 {% block content %}
 
 <br>
-<h1>Padron {{circuito.localidad}}</h1>
+<div class="padron-header">
+    <h1>Padron Mesa Nº {{ num_mesa }} - {{ localidad }} </h1>
+    <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuito_detail' circuito_id=circuito_id %}'">Volver</button>
+  </div>
 <div class="btn-toolbar float-end">
     <div class="btn-group mr-2">
         <input class="form-control" id="filterPersona" type="text" placeholder="Buscar..">    
@@ -52,4 +55,11 @@
     });
 </script>
 
+<style>
+    .padron-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
 {% endblock %}

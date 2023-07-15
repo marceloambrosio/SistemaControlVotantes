@@ -8,6 +8,7 @@ from django.db.models import Count,Q
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.urls import reverse
 
 # Create your views here.
 
@@ -39,15 +40,17 @@ class PadronDatatableView(BaseDatatableView):
         return qs
     
 
-class PadronListView(ListView):
-    model = Persona
-    template_name = 'padron/padron_list.html'
-    ordering = ['apellido', 'nombre','clase']
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        circuitos = self.request.user.circuitos.all()
-        return queryset.filter(mesa__escuela__circuito__in=circuitos)
+class PadronListView(View):
+    def get(self, request, circuito_id, num_mesa):
+        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa)
+        circuito = Circuito.objects.get(pk=circuito_id)
+        context = {
+            'persona_list': personas,
+            'circuito_id': circuito_id,
+            'num_mesa': num_mesa,
+            'localidad': circuito.localidad
+        }
+        return render(request, 'padron/padron_list.html', context)
     
     
 
@@ -101,20 +104,6 @@ class CircuitoDetailView(View):
 
     def get(self, request, circuito_id):
         circuito = get_object_or_404(Circuito, pk=circuito_id)
-        mesas = Mesa.objects.filter(escuela__circuito=circuito).annotate(votos_count=Count('persona', filter=Q(persona__voto=True)))
-
-        for mesa in mesas:
-            persona_count = mesa.persona_set.count()
-            mesa.porcentaje_votos = round(mesa.votos_count / persona_count * 100, 2)
-
-        context = {
-            'circuito': circuito,
-            'mesas': mesas
-        }
-        return render(request, 'circuito/circuito_detail.html', context)
-    
-    def get(self, request, circuito_id):
-        circuito = get_object_or_404(Circuito, pk=circuito_id)
         if circuito in request.user.circuitos.all():
             # El usuario tiene acceso al circuito, continúa con la lógica de la vista
             mesas = Mesa.objects.filter(escuela__circuito=circuito).annotate(votos_count=Count('persona', filter=Q(persona__voto=True)))
@@ -123,14 +112,30 @@ class CircuitoDetailView(View):
                 persona_count = mesa.persona_set.count()
                 mesa.porcentaje_votos = round(mesa.votos_count / persona_count * 100, 2)
 
+            form = NumeroMesaForm()
             context = {
                 'circuito': circuito,
-                'mesas': mesas
+                'mesas': mesas,
+                'form': form
             }
             return render(request, 'circuito/circuito_detail.html', context)
         else:
             # El usuario no tiene acceso al circuito, redirige a una página de error o realiza otra acción apropiada
             return render(request, 'circuito/circuito_access_denied.html')
+
+    def post(self, request, circuito_id):
+        # Obtener el número de mesa de la solicitud POST
+        form = NumeroMesaForm(request.POST)
+
+        if form.is_valid():
+            num_mesa = form.cleaned_data['num_mesa']
+            # Generar la URL inversa con los valores correctos
+            url = reverse('padron_list', args=[circuito_id, num_mesa])
+            # Redirigir a la URL generada
+            return redirect(url)
+        else:
+            # Manejar caso cuando no se proporciona el número de mesa
+            return redirect('mesa_no_existe')
     
 def circuito_access_denied(request):
     return render(request, 'circuito/circuito_access_denied.html')

@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.index, name="index_control"),
     #path('', views.index, name='index'),
-    path('padron_list/<int:circuito_id>/', views.PadronListView.as_view(), name="padron_list"),
+    path('padron_list/<int:circuito_id>/<int:num_mesa>/', views.PadronListView.as_view(), name="padron_list"),
     path('solicitar_numero_mesa/', solicitar_numero_mesa, name='solicitar_numero_mesa'),
     path('voto_no_existe/', voto_no_existe, name='voto_no_existe'),
     path('mesa/<int:mesa_id>/cambiar-voto/', cambiar_voto, name='cambiar_voto'),
