@@ -6,6 +6,8 @@
 <div class="padron-header">
     <h1>Padron Mesa Nº {{ num_mesa }} - {{ localidad }} </h1>
     <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuito_detail' circuito_id=circuito_id %}'">Volver</button>
+    <a class="btn" style="background-color: #468B97" href="{% url 'exportar_pdf' circuito_id=circuito_id num_mesa=num_mesa %}" target="_blank">Exportar PDF</a>
+
   </div>
 <div class="btn-toolbar float-end">
     <div class="btn-group mr-2">

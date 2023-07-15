@@ -1,0 +1,55 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Padron List PDF</title>
+    <link rel="stylesheet" href="{% static 'styles/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="padron-header">
+        <h1>Padron Mesa Nº {{ num_mesa }} - {{ localidad }} </h1>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col" class="col-3">Apellido y nombre</th>
+                <th scope="col" class="col-3">Domicilio</th>
+                <th scope="col" class="col-1">Clase</th>
+                <th scope="col" class="col-4">Lugar</th>
+                <th scope="col" class="col-1">Voto</th>
+            </tr>
+        </thead>
+        <tbody id="listPersona">
+            {% for personas in persona_list %}
+            <tr>
+                <td>{{personas.apellido}}, {{personas.nombre}}</td>
+                <td>{{personas.domicilio}}</td>
+                <td>{{personas.clase}}</td>
+                <td>{{personas.mesa.escuela.nombre}} - Mesa: {{personas.mesa.num_mesa}} (Orden: {{personas.num_orden}})</td>
+                <td>
+                    {% if personas.voto %}
+                    <a class="btn" style="background-color: #468B97; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-check-lg"></i></a>
+                    {% else %}
+                    <a class="btn" style="background-color: #EF6262; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-x-lg"></i></a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <style>
+        .padron-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+
+    <script src="{% static 'scripts/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

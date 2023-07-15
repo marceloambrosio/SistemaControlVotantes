@@ -9,6 +9,10 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import weasyprint
+
 
 # Create your views here.
 
@@ -50,7 +54,22 @@ class PadronListView(View):
             'num_mesa': num_mesa,
             'localidad': circuito.localidad
         }
-        return render(request, 'padron/padron_list.html', context)
+
+        if 'exportar_pdf' in request.path:
+            # Renderiza el contenido de la tabla a HTML utilizando el template
+            html_string = render_to_string('padron/padron_list_pdf.html', context)
+
+            # Crea un objeto WeasyPrint a partir del HTML
+            pdf = weasyprint.HTML(string=html_string).write_pdf()
+
+            # Devuelve el PDF como respuesta
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'filename="padron_list.pdf"'
+            response.write(pdf)
+
+            return response
+        else:
+            return render(request, 'padron/padron_list.html', context)
     
     
 

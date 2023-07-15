@@ -15,4 +15,5 @@ urlpatterns = [
     path('circuito_access_denied/', circuito_access_denied, name='mesa_no_existe'),
     path('circuitos_habilitados/', views.CircuitosHabilitadosView.as_view(), name='circuitos_habilitados'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('exportar_pdf/<int:circuito_id>/<int:num_mesa>/', views.PadronListView.as_view(), name='exportar_pdf'),
 ]
