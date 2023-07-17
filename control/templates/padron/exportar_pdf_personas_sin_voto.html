@@ -23,7 +23,7 @@
 </head>
 
 <h1>Circuito Nº {{ circuito.num_circuito }} - {{ circuito.localidad }}</h1>
-<h3>Personas que no votaron - Total: {{ cantidad_personas }}</h3>
+<h3>Porcentaje de voto: {{ porcentaje_votantes }}% - Personas que no votaron: {{ no_votantes }}</h3>
 
 <body>
     
@@ -31,7 +31,8 @@
         <thead>
             <tr style="background-color: #468B97;">
                 <th scope="col" style="width: 40%;">Apellido y nombre</th>
-                <th scope="col" style="width: 34%;">Domicilio</th>
+                <th scope="col" style="width: 1%;">Edad</th>
+                <th scope="col" style="width: 33%;">Domicilio</th>
                 <th scope="col" style="width: 26%;">Lugar de voto</th>
             </tr>
         </thead>
@@ -39,6 +40,7 @@
             {% for persona in persona_list %}
             <tr>
                 <td>{{ persona.apellido }}, {{ persona.nombre }}</td>
+                <td>{{ persona.edad }}</td>
                 <td>{{ persona.domicilio }}</td>
                 <td>{{ persona.mesa.escuela.nombre }}, Mesa: {{ persona.mesa.num_mesa }}</td>
             </tr>

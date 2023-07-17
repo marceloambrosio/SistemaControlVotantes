@@ -3,7 +3,7 @@ from .forms import VotoForm, NumeroMesaForm
 from .models import Persona, Mesa, Circuito
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import ListView
-from datetime import datetime
+from datetime import datetime, date
 from django.db.models import Count,Q
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,12 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
 from django.contrib.staticfiles import finders
+from openpyxl import Workbook
+from openpyxl.styles import Alignment
 import weasyprint
+import datetime
+
+
 
 
 # Create your views here.
@@ -50,6 +55,7 @@ class PadronListView(View):
     def get(self, request, circuito_id, num_mesa):
         personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa)
         circuito = Circuito.objects.get(pk=circuito_id)
+        mesa = Mesa.objects.get(pk=num_mesa)  # Obtén el objeto mesa a partir del num_mesa
         context = {
             'persona_list': personas,
             'circuito_id': circuito_id,
@@ -68,7 +74,7 @@ class PadronListView(View):
 
             # Devuelve el PDF como respuesta
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename="padron_list.pdf"'
+            response['Content-Disposition'] = 'filename="{} - Mesa {}.pdf"'.format(circuito.localidad, mesa.num_mesa)
             response.write(pdf)
 
             return response
@@ -175,12 +181,23 @@ class CircuitosHabilitadosView(View):
 class ExportarPDFPersonasSinVotoView(View):
     def get(self, request, circuito_id):
         circuito = get_object_or_404(Circuito, pk=circuito_id)
-        personas = Persona.objects.filter(mesa__escuela__circuito=circuito, voto=False)
-        cantidad_personas = personas.count()
+        personas = Persona.objects.filter(mesa__escuela__circuito=circuito)
+        total_personas = personas.count()
+        votantes = personas.filter(voto=True).count()
+        no_votantes = total_personas - votantes
+        porcentaje_votantes = round((votantes / total_personas) * 100, 2) if total_personas > 0 else 0
+        
+        # Calcular la edad de cada persona
+        current_year = datetime.datetime.now().year
+        for persona in personas:
+            persona.edad = current_year - persona.clase
+
         context = {
             'persona_list': personas,
             'circuito': circuito,
-            'cantidad_personas': cantidad_personas,
+            'cantidad_personas': total_personas,
+            'no_votantes': no_votantes,
+            'porcentaje_votantes': porcentaje_votantes,
         }
 
         # Renderiza el contenido de la tabla a HTML utilizando el template
@@ -193,7 +210,41 @@ class ExportarPDFPersonasSinVotoView(View):
 
         # Devuelve el PDF como respuesta
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'filename="personas_sin_voto.pdf"'
+        response['Content-Disposition'] = 'filename="{} - Personas que no votaron.pdf"'.format(circuito.localidad)
         response.write(pdf)
+
+        return response
+
+class ExportarExcelPersonasSinVotoView(View):
+    def get(self, request, circuito_id):
+        circuito = get_object_or_404(Circuito, pk=circuito_id)
+        personas = Persona.objects.filter(mesa__escuela__circuito=circuito)
+
+        # Crear el libro de Excel y la hoja de cálculo
+        workbook = Workbook()
+        worksheet = workbook.active
+
+        # Agregar los encabezados de las columnas
+        worksheet.append(['Apellido y nombre', 'Clase', 'Dirección', 'Escuela - Número de Mesa', 'Voto'])
+
+        # Agregar los datos de las personas a la hoja de cálculo
+        for persona in personas:
+            voto = "Sí" if persona.voto else "No"
+            escuela_mesa = f"{persona.mesa.escuela.nombre}, Mesa: {persona.mesa.num_mesa}"
+            worksheet.append([persona.apellido + ', ' + persona.nombre, persona.clase, persona.domicilio, escuela_mesa, voto])
+
+        # Ajustar el ancho de las columnas
+        worksheet.column_dimensions['A'].width = 30
+        worksheet.column_dimensions['B'].width = 10
+        worksheet.column_dimensions['C'].width = 30
+        worksheet.column_dimensions['D'].width = 25
+        worksheet.column_dimensions['E'].width = 10
+
+        # Configurar la respuesta para descargar el archivo
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="{circuito.localidad}_personas_voto.xlsx"'
+
+        # Guardar el libro de Excel en la respuesta
+        workbook.save(response)
 
         return response
