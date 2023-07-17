@@ -5,23 +5,36 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ localidad }} - Mesa {{ num_mesa }}</title>
-    <link rel="stylesheet" href="{% static 'styles/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+
+    <style>
+        @page {
+            /* Definir encabezado y pie de página */
+            @top-right {
+                content: "Pag. " counter(page) "/" counter(pages);
+            }
+        }
+
+        /* Estilos adicionales */
+        body {
+            /* Asegúrate de dejar suficiente margen en la parte inferior para el pie de página */
+            margin-bottom: 30mm;
+        }
+    </style>
 </head>
 <body>
 
         <h1>Circuito Nº {{ circuito_id }} - {{ localidad }}</h1>
-        <h2>Padron Mesa Nº {{ num_mesa }}</h2>
+        <h3>Padron Mesa Nº {{ num_mesa }}</h3>
 
 
-    <table class="table table-bordered" style="width: 100%;">
+    <table class="table table-striped" style="width: 100%;">
         <thead>
-            <tr>
-                <th scope="col" class="col-3">Apellido y nombre</th>
-                <th scope="col" class="col-3">Domicilio</th>
-                <th scope="col" class="col-1">Clase</th>
-                <th scope="col" class="col-4">Lugar</th>
-                <th scope="col" class="col-1">Voto</th>
+            <tr style="background-color: #468B97;">
+                <th scope="col" style="width: 34%;">Apellido y nombre</th>
+                <th scope="col" style="width: 34%;">Domicilio</th>
+                <th scope="col" style="width: 1%;">Clase</th>
+                <th scope="col" style="width: 30%;">Lugar</th>
+                <th scope="col" style="width: 1%;">Voto</th>
             </tr>
         </thead>
         <tbody id="listPersona">
@@ -30,12 +43,12 @@
                 <td>{{personas.apellido}}, {{personas.nombre}}</td>
                 <td>{{personas.domicilio}}</td>
                 <td>{{personas.clase}}</td>
-                <td>{{personas.mesa.escuela.nombre}} - Mesa: {{personas.mesa.num_mesa}} (Orden: {{personas.num_orden}})</td>
+                <td>{{personas.mesa.escuela.nombre}} - Mesa: {{personas.mesa.num_mesa}}</td>
                 <td>
                     {% if personas.voto %}
-                    <a class="btn" style="background-color: #468B97; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-check-lg"></i></a>
+                    Si
                     {% else %}
-                    <a class="btn" style="background-color: #EF6262; cursor:not-allowed" role="button" aria-pressed="true"><i class="bi-x-lg"></i></a>
+                    No
                     {% endif %}
                 </td>
             </tr>

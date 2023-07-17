@@ -5,21 +5,34 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ circuito.localidad }} - Personas que no votaron</title>
-    <link rel="stylesheet" href="{% static 'styles/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+
+    <style>
+        @page {
+            /* Definir encabezado y pie de página */
+            @top-right {
+                content: "Pag. " counter(page) "/" counter(pages);
+            }
+        }
+
+        /* Estilos adicionales */
+        body {
+            /* Asegúrate de dejar suficiente margen en la parte inferior para el pie de página */
+            margin-bottom: 30mm;
+        }
+    </style>
 </head>
 
 <h1>Circuito Nº {{ circuito.num_circuito }} - {{ circuito.localidad }}</h1>
-<h2>Personas que no votaron - Total: {{ cantidad_personas }}</h2>
+<h3>Personas que no votaron - Total: {{ cantidad_personas }}</h3>
 
 <body>
     
-    <table class="table table-bordered" style="width: 100%;">
+    <table class="table table-striped" style="width: 100%;">
         <thead>
-            <tr>
-                <th scope="col">Apellido y nombre</th>
-                <th scope="col">Domicilio</th>
-                <th scope="col">Lugar de voto</th>
+            <tr style="background-color: #468B97;">
+                <th scope="col" style="width: 40%;">Apellido y nombre</th>
+                <th scope="col" style="width: 34%;">Domicilio</th>
+                <th scope="col" style="width: 26%;">Lugar de voto</th>
             </tr>
         </thead>
         <tbody>
@@ -27,7 +40,7 @@
             <tr>
                 <td>{{ persona.apellido }}, {{ persona.nombre }}</td>
                 <td>{{ persona.domicilio }}</td>
-                <td>{{ persona.mesa.escuela.nombre }}, Mesa: {{ persona.mesa.num_mesa }} (Orden: {{ persona.num_orden }})</td>
+                <td>{{ persona.mesa.escuela.nombre }}, Mesa: {{ persona.mesa.num_mesa }}</td>
             </tr>
             {% endfor %}
         </tbody>

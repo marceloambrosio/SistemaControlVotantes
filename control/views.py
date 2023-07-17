@@ -11,6 +11,8 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from weasyprint import HTML, CSS
+from django.contrib.staticfiles import finders
 import weasyprint
 
 
@@ -60,7 +62,9 @@ class PadronListView(View):
             html_string = render_to_string('padron/padron_list_pdf.html', context)
 
             # Crea un objeto WeasyPrint a partir del HTML
-            pdf = weasyprint.HTML(string=html_string).write_pdf()
+            bootstrap_css_path = finders.find('styles/css/bootstrap.min.css')
+            bootstrap_css = CSS(filename=bootstrap_css_path)
+            pdf = HTML(string=html_string).write_pdf(stylesheets=[bootstrap_css])
 
             # Devuelve el PDF como respuesta
             response = HttpResponse(content_type='application/pdf')
@@ -183,7 +187,9 @@ class ExportarPDFPersonasSinVotoView(View):
         html_string = render_to_string('padron/exportar_pdf_personas_sin_voto.html', context)
 
         # Crea un objeto WeasyPrint a partir del HTML
-        pdf = weasyprint.HTML(string=html_string).write_pdf()
+        bootstrap_css_path = finders.find('styles/css/bootstrap.min.css')
+        bootstrap_css = CSS(filename=bootstrap_css_path)
+        pdf = HTML(string=html_string).write_pdf(stylesheets=[bootstrap_css])
 
         # Devuelve el PDF como respuesta
         response = HttpResponse(content_type='application/pdf')

@@ -10,7 +10,5 @@ Para weasyprint, instalar las siguientes dependencias de acuerdo al sistema oper
         brew install python3 cairo pango gdk-pixbuf libffi
 
     En windows:
-        https://www.cairographics.org/download/
-        https://pango.gnome.org/download/
-        https://github.com/GNOME/gdk-pixbuf/releases
-        https://github.com/libffi/libffi/releases
+        Instalar GTK3 https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
+        Crear entorno virtual una vez instalado
