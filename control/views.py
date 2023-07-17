@@ -175,8 +175,21 @@ class CircuitosHabilitadosView(View):
     @method_decorator(login_required)
     def get(self, request):
         circuitos = request.user.circuitos.all()
+
+        for circuito in circuitos:
+            total_personas = Persona.objects.filter(mesa__escuela__circuito=circuito).count()
+            total_votos = Persona.objects.filter(mesa__escuela__circuito=circuito, voto=True).count()
+
+            if total_personas > 0:
+                porcentaje_votos = (total_votos / total_personas) * 100
+                circuito.porcentaje_votos = round(porcentaje_votos, 2)
+            else:
+                circuito.porcentaje_votos = 0
+
         context = {'circuitos': circuitos}
         return render(request, 'circuito/circuito_habilitado.html', context)
+
+
     
 class ExportarPDFPersonasSinVotoView(View):
     def get(self, request, circuito_id):

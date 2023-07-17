@@ -7,26 +7,35 @@
   <div class="container">
     <div class="row">
       <div class="col-6">
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th scope="col" class="col-4">Circuito</th>
-        <th scope="col" class="col-1">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for circuito in circuitos %}
-      <tr>
-        <td>{{ circuito.num_circuito }} - {{ circuito.localidad }}</td>
-        <td>
-          <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'circuito_detail' circuito_id=circuito.num_circuito %}'">Ver mesas</button>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'index_control' %}'">Volver</button>
-</div>
-</div>
-</div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col" class="col-4">Circuito</th>
+              <th scope="col" class="col-4">Porcentaje de votos</th> <!-- Nueva columna -->
+              <th scope="col" class="col-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for circuito in circuitos %}
+            <tr>
+              <td>{{ circuito.num_circuito }} - {{ circuito.localidad }}</td>
+              <td>
+                <div class="progress">
+                  <div class="progress-bar {% if circuito.porcentaje_votos < 30 %}bg-danger{% elif circuito.porcentaje_votos < 60 %}bg-warning{% elif circuito.porcentaje_votos == 100 %}bg-success{% else %}bg-info{% endif %}" role="progressbar" style="width: {{ circuito.porcentaje_votos }}%;" aria-valuenow="{{ circuito.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">
+                    {{ circuito.porcentaje_votos }}%
+                  </div>
+                </div>
+              </td>                                       
+              <td>
+                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'circuito_detail' circuito_id=circuito.num_circuito %}'">Ver mesas</button>
+              </td>
+              
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'index_control' %}'">Volver</button>
+      </div>
+    </div>
+  </div>
 {% endblock %}

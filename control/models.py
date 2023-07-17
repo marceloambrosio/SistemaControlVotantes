@@ -15,6 +15,16 @@ class Circuito(models.Model):
     localidad = models.CharField(max_length=100)
     seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
     
+    def calcular_porcentaje_votos_circuito(self):
+        total_personas = self.persona_set.count()
+        total_votos = self.persona_set.filter(voto=True).count()
+
+        if total_personas > 0:
+            porcentaje_votos = (total_votos / total_personas) * 100
+            return round(porcentaje_votos, 2)
+        else:
+            return 0
+
     def __str__(self):
         return str(self.num_circuito).zfill(4) + " - " + self.localidad
 
