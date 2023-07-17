@@ -139,3 +139,5 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_REDIRECT_URL = 'index_control'
+
+LOGIN_URL = 'login'

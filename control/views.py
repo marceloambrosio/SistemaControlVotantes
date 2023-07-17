@@ -23,6 +23,7 @@ import datetime
 
 # Create your views here.
 
+@login_required(login_url='login')  # Reemplaza 'login' con la URL correspondiente a tu vista de inicio de sesión
 def index(request):
     circuitos = request.user.circuitos.all()
     context = {'circuitos': circuitos}
@@ -127,7 +128,6 @@ def mesa_no_existe(request):
     return render(request, 'mesa/mesa_no_existe.html')
 
 class CircuitoDetailView(View):
-    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -172,7 +172,6 @@ def circuito_access_denied(request):
 
 
 class CircuitosHabilitadosView(View):
-    @method_decorator(login_required)
     def get(self, request):
         circuitos = request.user.circuitos.all()
 
