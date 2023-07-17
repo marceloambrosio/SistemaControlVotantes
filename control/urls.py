@@ -4,7 +4,7 @@ from .views import cambiar_voto, voto_no_existe, solicitar_numero_mesa, mesa_no_
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    path('', views.index, name="index_control"),
+    path('', views.index, name="index"),
     #path('', views.index, name='index'),
     path('solicitar_numero_mesa/', login_required(solicitar_numero_mesa), name='solicitar_numero_mesa'),
     path('mesa_no_existe/', login_required(mesa_no_existe), name='mesa_no_existe'),

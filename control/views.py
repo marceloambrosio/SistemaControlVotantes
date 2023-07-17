@@ -6,15 +6,15 @@ from django.views.generic import ListView
 from datetime import datetime, date
 from django.db.models import Count,Q
 from django.views import View
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.urls import reverse
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
 from django.contrib.staticfiles import finders
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
+from django.contrib.auth.views import LoginView
 import weasyprint
 import datetime
 
@@ -25,9 +25,19 @@ import datetime
 
 @login_required(login_url='login')  # Reemplaza 'login' con la URL correspondiente a tu vista de inicio de sesión
 def index(request):
-    circuitos = request.user.circuitos.all()
-    context = {'circuitos': circuitos}
-    return render(request, 'index_control.html', context)
+    if user_in_group(request.user):
+        return redirect('solicitar_numero_mesa')
+    else:
+        circuitos = request.user.circuitos.all()
+        context = {'circuitos': circuitos}
+        return render(request, 'index_control.html', context)
+
+class CustomLoginView(LoginView):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse_lazy('index'))
+        else:
+            return super().dispatch(request, *args, **kwargs)
 
 class PadronDatatableView(BaseDatatableView):
     model = Persona
@@ -82,8 +92,10 @@ class PadronListView(View):
         else:
             return render(request, 'padron/padron_list.html', context)
     
-    
+def user_in_group(user):
+    return user.groups.filter(name='Fiscales').exists()
 
+@user_passes_test(user_in_group, login_url='login')
 def cambiar_voto(request, mesa_id):
     mesa = get_object_or_404(Mesa, pk=mesa_id)
 
@@ -103,9 +115,11 @@ def cambiar_voto(request, mesa_id):
 
     return render(request, 'voto/cambiar_voto.html', {'form': form, 'mesa': mesa})
 
+@user_passes_test(user_in_group, login_url='login')
 def voto_no_existe(request):
     return render(request, 'voto/voto_no_existe.html')
 
+@user_passes_test(user_in_group, login_url='login')
 def solicitar_numero_mesa(request):
     if request.method == 'POST':
         form = NumeroMesaForm(request.POST)
@@ -124,6 +138,7 @@ def solicitar_numero_mesa(request):
     }
     return render(request, 'mesa/solicitar_numero_mesa.html', context)
 
+@user_passes_test(user_in_group, login_url='login')
 def mesa_no_existe(request):
     return render(request, 'mesa/mesa_no_existe.html')
 
