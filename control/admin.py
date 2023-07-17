@@ -18,8 +18,14 @@ class CircuitoAdmin(admin.ModelAdmin):
 class EscuelaAdmin(admin.ModelAdmin):
     ordering = ['nombre']
 
+class EscuelaAdmin(ImportExportModelAdmin):
+    pass
+
 class MesaAdmin(admin.ModelAdmin):
     ordering = ['num_mesa']
+
+class MesaAdmin(ImportExportModelAdmin):
+    pass
 
 class PersonaAdmin(admin.ModelAdmin):
     search_fields = ('apellido','nombre','dni'),

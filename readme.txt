@@ -1,5 +1,11 @@
-El archivo csv para cargar las personas tiene que tener este encabezado
+El archivo csv para cargar PERSONAS tiene que tener este encabezado
     num_orden,dni,apellido,nombre,clase,domicilio,mesa
+
+El archivo csv para cargar ESCUELAS tiene que tener este encabezado
+    nombre,direccion,circuito
+
+El archivo csv para cargar MESAS tiene que tener este encabezado
+    num_mesa,escuela
 
 Para weasyprint, instalar las siguientes dependencias de acuerdo al sistema operativo
     En linux:
