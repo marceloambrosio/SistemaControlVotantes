@@ -13,7 +13,7 @@ class Seccion(models.Model):
 class Circuito(models.Model):
     num_circuito = models.IntegerField(primary_key=True)
     localidad = models.CharField(max_length=100)
-    seccion = models.ForeignKey(Seccion, on_delete=models.PROTECT)
+    seccion = models.ForeignKey(Seccion, on_delete=models.CASCADE)
     
     def calcular_porcentaje_votos_circuito(self):
         total_personas = self.persona_set.count()
@@ -31,14 +31,14 @@ class Circuito(models.Model):
 class Escuela(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=100)
-    circuito = models.ForeignKey(Circuito, on_delete=models.PROTECT)
+    circuito = models.ForeignKey(Circuito, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.nombre + " (" + self.direccion + ") - " + self.circuito.localidad + " (" + self.circuito.seccion.departamento + ")"
     
 class Mesa(models.Model):
     num_mesa = models.IntegerField(primary_key=True)
-    escuela = models.ForeignKey(Escuela, on_delete=models.PROTECT)
+    escuela = models.ForeignKey(Escuela, on_delete=models.CASCADE)
 
     def __str__(self):
         return "Mesa Nº " + str(self.num_mesa).zfill(4) + " - " + self.escuela.circuito.localidad
@@ -54,7 +54,7 @@ class Persona(models.Model):
     nombre = models.CharField(max_length=100)
     clase = models.IntegerField()
     domicilio = models.CharField(max_length=100)
-    mesa = models.ForeignKey(Mesa, on_delete=models.PROTECT)
+    mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
     voto = models.BooleanField(default=False)
 
     class Meta:
