@@ -99,21 +99,26 @@ def user_in_group(user):
 def cambiar_voto(request, mesa_id):
     mesa = get_object_or_404(Mesa, pk=mesa_id)
 
-    if request.method == 'POST':
-        form = VotoForm(request.POST)
-        if form.is_valid():
-            num_orden = form.cleaned_data['num_orden']
-            persona = Persona.objects.filter(num_orden=num_orden, mesa=mesa).first()
-            if persona:
-                persona.voto = True
-                persona.save()
-                return render(request, 'voto/voto_success.html', {'mesa': mesa, 'persona': persona})
-            else:
-                return render(request, 'voto/voto_no_existe.html', {'mesa_id': mesa_id, 'num_orden': num_orden})
-    else:
-        form = VotoForm()
+    # Verificar si el usuario tiene acceso al circuito correspondiente a la mesa
+    if mesa.escuela.circuito in request.user.circuitos.all():
+        if request.method == 'POST':
+            form = VotoForm(request.POST)
+            if form.is_valid():
+                num_orden = form.cleaned_data['num_orden']
+                persona = Persona.objects.filter(num_orden=num_orden, mesa=mesa).first()
+                if persona:
+                    persona.voto = True
+                    persona.save()
+                    return render(request, 'voto/voto_success.html', {'mesa': mesa, 'persona': persona})
+                else:
+                    return render(request, 'voto/voto_no_existe.html', {'mesa_id': mesa_id, 'num_orden': num_orden})
+        else:
+            form = VotoForm()
 
-    return render(request, 'voto/cambiar_voto.html', {'form': form, 'mesa': mesa})
+        return render(request, 'voto/cambiar_voto.html', {'form': form, 'mesa': mesa})
+    else:
+        # Si el usuario no tiene acceso al circuito correspondiente a la mesa, redirigir a la página de error
+        return render(request, 'mesa/mesa_no_existe.html')
 
 @user_passes_test(user_in_group, login_url='login')
 def voto_no_existe(request):
