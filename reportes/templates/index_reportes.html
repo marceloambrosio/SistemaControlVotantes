@@ -1,0 +1,15 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+
+<br>
+<h1>Reportes</h1>
+<br>
+
+<div class="d-grid gap-2">
+    <button class="btn" style="background-color: #F3AA60" type="button" onclick="location.href='{% url 'circuitos_habilitados' %}'">Mostrar estado de mesas</button>
+    <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='/expedientes/persona_new'">Cargar voto</button>
+    <button class="btn" style="background-color: #EF6262" type="button" onclick="location.href='/expedientes/persona_new'">Ejemplo</button>
+</div>
+
+{% endblock content %}

@@ -22,6 +22,7 @@ from control.views import CustomLoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('control/', include('control.urls')),
+    path('reportes/', include('reportes.urls')),
     path('login/', CustomLoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 ]

@@ -1,0 +1,79 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Estado de las mesas</title>
+
+    <style>
+        .mesas-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+      </style>
+</head>
+<body>
+    <br>
+    <div class="mesas-header">
+        <h1>Estado de las mesas en {{ circuito.localidad }}</h1>
+
+        <div class="select-columnas">
+            <select id="num_columnas" class="form-select" onchange="cambiarColumnas()">
+                <option value="1">1 columna</option>
+                <option value="2">2 columnas</option>
+                <option value="3">3 columnas</option>
+                <option value="4">4 columnas</option>
+                <option value="5">5 columnas</option>
+            </select>
+        </div>
+    </div>
+        
+    <div id="mesasContainer" class="row">
+        {% for mesa in mesas %}
+        <div class="mesa col">
+            <br>
+            <h3>{{ mesa.num_mesa }}</h3>
+            <div class="progress">
+                {% if mesa.porcentaje_votos < 30 %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #EF6262;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                {% elif mesa.porcentaje_votos < 60 %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #F3AA60;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                {% elif mesa.porcentaje_votos == 100 %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #5DB75D;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                {% else %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #468B97;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Agrega el enlace a jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function cambiarColumnas() {
+            var numColumnas = parseInt($("#num_columnas").val());
+            var mesas = $(".mesa");
+            var totalMesas = mesas.length;
+            var mesasPorColumna = Math.ceil(totalMesas / numColumnas);
+
+            var columnasHtml = "";
+            for (var i = 0; i < totalMesas; i += mesasPorColumna) {
+                var columnaMesas = mesas.slice(i, i + mesasPorColumna).wrapAll("<div class='col'></div>").parent().get(0).outerHTML;
+                columnasHtml += columnaMesas;
+            }
+
+            $("#mesasContainer").html(columnasHtml);
+        }
+
+        // Ejecutar cambiarColumnas() al cargar la página y cada vez que cambie la selección
+        $(document).ready(cambiarColumnas);
+        $("#num_columnas").on("change", cambiarColumnas);
+    </script>
+</body>
+</html>
+
+{% endblock %}
