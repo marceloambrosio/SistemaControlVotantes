@@ -27,7 +27,7 @@ DEBUG = True
 
 #ALLOWED_HOSTS = []
 #HABILITAR PARA PROBAR FUERA DE LA PC
-ALLOWED_HOSTS = ['localhost','127.0.0.1','192.168.9.42']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
