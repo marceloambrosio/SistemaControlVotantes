@@ -67,13 +67,29 @@
             }
 
             $("#mesasContainer").html(columnasHtml);
+
+            // Guardar la selección actual en el localStorage
+            localStorage.setItem("num_columnas", numColumnas);
         }
 
-        // Ejecutar cambiarColumnas() al cargar la página y cada vez que cambie la selección
-        $(document).ready(cambiarColumnas);
-        $("#num_columnas").on("change", cambiarColumnas);
+        // Restaurar la selección del localStorage al cargar la página
+        $(document).ready(function() {
+            var numColumnasGuardadas = localStorage.getItem("num_columnas");
+            if (numColumnasGuardadas) {
+                $("#num_columnas").val(numColumnasGuardadas);
+            }
+
+            cambiarColumnas();
+
+            // Llamar a cambiarColumnas cada vez que cambie la selección
+            $("#num_columnas").on("change", cambiarColumnas);
+        });
+
+        // Refrescar la página cada 60 segundos
+        setTimeout(function() {
+            location.reload();
+        }, 60000);
     </script>
 </body>
 </html>
-
 {% endblock %}

@@ -20,10 +20,16 @@
             <tr>
               <td>{{ circuito.num_circuito }} - {{ circuito.localidad }}</td>
               <td>
-                <div class="progress">
-                  <div class="progress-bar {% if circuito.porcentaje_votos < 30 %}bg-danger{% elif circuito.porcentaje_votos < 60 %}bg-warning{% elif circuito.porcentaje_votos == 100 %}bg-success{% else %}bg-info{% endif %}" role="progressbar" style="width: {{ circuito.porcentaje_votos }}%;" aria-valuenow="{{ circuito.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">
-                    {{ circuito.porcentaje_votos }}%
-                  </div>
+                  <div class="progress">
+                    {% if circuito.porcentaje_votos < 30 %}
+                        <div class="progress-bar" role="progressbar" style="width: {{ circuito.porcentaje_votos }}%; background-color: #EF6262;" aria-valuenow="{{ circuito.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ circuito.porcentaje_votos }}%</div>
+                    {% elif circuito.porcentaje_votos < 60 %}
+                        <div class="progress-bar" role="progressbar" style="width: {{ circuito.porcentaje_votos }}%; background-color: #F3AA60;" aria-valuenow="{{ circuito.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ circuito.porcentaje_votos }}%</div>
+                    {% elif circuito.porcentaje_votos == 100 %}
+                        <div class="progress-bar" role="progressbar" style="width: {{ circuito.porcentaje_votos }}%; background-color: #5DB75D;" aria-valuenow="{{ circuito.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ circuito.porcentaje_votos }}%</div>
+                    {% else %}
+                        <div class="progress-bar" role="progressbar" style="width: {{ circuito.porcentaje_votos }}%; background-color: #468B97;" aria-valuenow="{{ circuito.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ circuito.porcentaje_votos }}%</div>
+                    {% endif %}
                 </div>
               </td>                                       
               <td>
