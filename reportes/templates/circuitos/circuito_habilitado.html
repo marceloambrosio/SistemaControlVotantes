@@ -1,0 +1,33 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+<br>
+  <h1>Circuitos Habilitados</h1>
+  <br>
+  <div class="container">
+    <div class="row">
+      <div class="col-6">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col" class="col-4">Circuito</th>
+              <th scope="col" class="col-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for circuito in circuitos %}
+            <tr>
+              <td>{{ circuito.num_circuito }} - {{ circuito.localidad }}</td>                                   
+              <td>
+                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'estado_mesas' circuito_id=circuito.num_circuito %}'">Estado mesas</button>
+              </td>
+              
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'index_reportes' %}'">Volver</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -6,7 +6,7 @@ from control.models import Mesa, Circuito
 # Create your views here.
 
 @login_required(login_url='login')  # Reemplaza 'login' con la URL correspondiente a tu vista de inicio de sesión
-def index(request):
+def index_reportes(request):
     return render(request, 'index_reportes.html')
 
 
@@ -29,3 +29,10 @@ class EstadoMesasView(View):
         }
 
         return render(request, 'mesas/estado_mesas.html', context)
+    
+class CircuitosHabilitadosView(View):
+    def get(self, request):
+        circuitos = request.user.circuitos.all()
+
+        context = {'circuitos': circuitos}
+        return render(request, 'circuitos/circuito_habilitado.html', context)
