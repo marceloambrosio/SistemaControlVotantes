@@ -5,6 +5,19 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as 
 from django.contrib.auth.models import Group
 
 
+def reiniciar_votos_circuito(modeladmin, request, queryset):
+    for circuito in queryset:
+        personas_en_circuito = Persona.objects.filter(mesa__escuela__circuito=circuito)
+        personas_en_circuito.update(voto=False)
+reiniciar_votos_circuito.short_description = "Reiniciar votos para todas las personas en este circuito"
+
+def reiniciar_votos_mesa(modeladmin, request, queryset):
+    for mesa in queryset:
+        personas_en_mesa = mesa.persona_set.all()
+        personas_en_mesa.update(voto=False)
+reiniciar_votos_mesa.short_description = "Reiniciar votos para todas las personas en esta mesa"
+
+
 # Register your models here.
 
 class SeccionAdmin(admin.ModelAdmin):
@@ -14,6 +27,7 @@ class SeccionAdmin(admin.ModelAdmin):
 class CircuitoAdmin(admin.ModelAdmin):
     search_fields = ('localidad','num_circuito'),
     ordering = ['localidad']
+    actions = [reiniciar_votos_circuito] 
 
 class EscuelaAdmin(admin.ModelAdmin):
     ordering = ['nombre']
@@ -23,6 +37,7 @@ class EscuelaAdmin(ImportExportModelAdmin):
 
 class MesaAdmin(admin.ModelAdmin):
     ordering = ['num_mesa']
+    actions = [reiniciar_votos_mesa]
 
 class MesaAdmin(ImportExportModelAdmin):
     pass
