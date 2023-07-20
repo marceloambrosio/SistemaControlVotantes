@@ -166,12 +166,14 @@ class CircuitoDetailView(View):
                 'circuito': circuito,
                 'circuito_id': circuito_id,  # Agrega circuito_id al contexto
                 'mesas': mesas,
-                'form': form
+                'form': form,
+                'porcentaje_votos_circuito': calcular_porcentaje_votos_circuito(circuito)  # Agrega el porcentaje de votos del circuito al contexto
             }
             return render(request, 'circuito/circuito_detail.html', context)
         else:
             # El usuario no tiene acceso al circuito, redirige a una página de error o realiza otra acción apropiada
             return render(request, 'circuito/circuito_access_denied.html')
+
 
     def post(self, request, circuito_id):
         # Obtener el número de mesa de la solicitud POST
@@ -190,23 +192,26 @@ class CircuitoDetailView(View):
 def circuito_access_denied(request):
     return render(request, 'circuito/circuito_access_denied.html')
 
+def calcular_porcentaje_votos_circuito(circuito):
+    total_personas = Persona.objects.filter(mesa__escuela__circuito=circuito).count()
+    total_votos = Persona.objects.filter(mesa__escuela__circuito=circuito, voto=True).count()
+
+    if total_personas > 0:
+        porcentaje_votos = (total_votos / total_personas) * 100
+        return round(porcentaje_votos, 2)
+    else:
+        return 0
 
 class CircuitosHabilitadosView(View):
     def get(self, request):
         circuitos = request.user.circuitos.all()
 
         for circuito in circuitos:
-            total_personas = Persona.objects.filter(mesa__escuela__circuito=circuito).count()
-            total_votos = Persona.objects.filter(mesa__escuela__circuito=circuito, voto=True).count()
-
-            if total_personas > 0:
-                porcentaje_votos = (total_votos / total_personas) * 100
-                circuito.porcentaje_votos = round(porcentaje_votos, 2)
-            else:
-                circuito.porcentaje_votos = 0
+            circuito.porcentaje_votos = calcular_porcentaje_votos_circuito(circuito)
 
         context = {'circuitos': circuitos}
         return render(request, 'circuito/circuito_habilitado.html', context)
+
 
 
     

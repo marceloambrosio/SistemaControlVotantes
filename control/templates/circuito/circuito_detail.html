@@ -5,7 +5,7 @@
 <br>
 
 <div class="padron-header">
-  <h2>Circuito {{ circuito.num_circuito }} - {{ circuito.localidad }} ({{ circuito.seccion.departamento }})</h2>
+  <h2>Circuito {{ circuito.num_circuito }} - {{ circuito.localidad }} - Total: {{ porcentaje_votos_circuito }}%</h2>
   <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuitos_habilitados' %}'">Volver</button>
   <a class="btn" style="background-color: #468B97" href="{% url 'exportar_pdf_personas_sin_voto' circuito_id=circuito_id %}" target="_blank">Exportar PDF</a>
   <button class="btn" style="background-color: #3AA6B9" type="button" onclick="location.href='{% url 'exportar_excel_personas_sin_voto' circuito_id=circuito_id %}'">Descargar Excel</button>
