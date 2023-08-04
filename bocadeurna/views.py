@@ -1,8 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from .models import DetalleBocaDeUrna, Candidato
+from .models import DetalleBocaDeUrna, Candidato, BocaDeUrna
 from control.models import Circuito, Persona
+from .forms import DetalleBocaDeUrnaForm
 import json
 
 # Create your views here.
@@ -49,5 +50,37 @@ class EstadoBocaDeUrnaView(View):
         return render(request, 'bocadeurna/estado_boca_de_urna.html', context)
 
 
+@login_required
+def carga_boca_de_urna(request):
+    circuito_usuario = request.user.circuitos.first()
 
+    if not circuito_usuario:
+        return render(request, 'error.html', {'error_message': 'No tiene circuitos habilitados.'})
 
+    bocas_de_urna = BocaDeUrna.objects.filter(circuito=circuito_usuario)
+
+    if request.method == 'POST':
+        form = DetalleBocaDeUrnaForm(request.POST, circuito_usuario=circuito_usuario)
+        if form.is_valid():
+            detalle_boca_de_urna = form.save(commit=False)
+            if bocas_de_urna.exists():
+                # Asignar la boca de urna correspondiente al detalle
+                detalle_boca_de_urna.boca_de_urna = bocas_de_urna.first()
+                # Asignar el circuito del candidato seleccionado
+                candidato_seleccionado = form.cleaned_data['candidato']
+                detalle_boca_de_urna.circuito = candidato_seleccionado.circuito
+                detalle_boca_de_urna.save()
+            else:
+                # Manejar el caso en el que no haya boletas de boca de urna asociadas al circuito del usuario
+                return render(request, 'error.html', {'error_message': 'No hay boletas de boca de urna asociadas a su circuito.'})
+            return redirect('carga_bocadeurna')
+    else:
+        form = DetalleBocaDeUrnaForm(circuito_usuario=circuito_usuario)  # Pasamos el circuito_usuario al formulario
+
+    context = {
+        'bocas_de_urna': zip(bocas_de_urna, [DetalleBocaDeUrna.objects.filter(boca_de_urna=boca_de_urna) for boca_de_urna in bocas_de_urna]),
+        'form': form,
+        'circuito': circuito_usuario.localidad,
+    }
+
+    return render(request, 'bocadeurna/carga_boca_de_urna.html', context)

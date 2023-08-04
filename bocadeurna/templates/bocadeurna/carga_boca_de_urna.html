@@ -1,0 +1,28 @@
+{% extends 'bocadeurna_base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<br>
+<div class="container">
+<h1 class="text-center"><b>Boca de urna</b></h1>
+<h2 class="text-center">{{ circuito }}</h2>
+
+<div class="row">
+  <div class="col-sm-8 offset-sm-2">
+<form method="post">
+<h2>Agregar nuevo detalle</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Guardar</button>
+</form>
+  <button class="btn float-end" style="background-color: #468B97">Cargar</button>
+  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'solicitar_numero_mesa' %}'">Volver</button>
+</form>
+</div>
+</div>
+</div>
+
+{% endblock %}
