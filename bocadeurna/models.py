@@ -29,6 +29,7 @@ class Candidato(models.Model):
     circuito = models.ForeignKey(Circuito, on_delete=models.CASCADE)
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
     partido = models.ForeignKey(Partido, on_delete=models.CASCADE)
+    color = models.CharField(default='#000000', max_length=7)
 
     def __str__(self):
         return self.circuito.localidad + " - " + self.cargo.titulo + " - " + self.apellido + ", " + self.nombre + " (" + self.partido.nombre + ")"
@@ -49,4 +50,3 @@ class DetalleBocaDeUrna(models.Model):
 
     def __str__(self):
         return self.boca_de_urna.circuito.localidad + " - " + str(self.edad) + " - " + self.candidato.apellido + ", " + self.candidato.nombre + " (" + self.candidato.partido.nombre + ")"
-

@@ -20,6 +20,7 @@
               <td>{{ circuito.num_circuito }} - {{ circuito.localidad }}</td>                                   
               <td>
                 <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'estado_mesas' circuito_id=circuito.num_circuito %}'">Estado mesas</button>
+                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'bocadeurna' circuito_id=circuito.num_circuito %}'">Boca de urna</button>
               </td>
               
             </tr>
