@@ -17,3 +17,5 @@ class DetalleBocaDeUrnaForm(forms.ModelForm):
             candidatos_del_circuito = Candidato.objects.filter(circuito=self.circuito_usuario)
             self.fields['candidato'].queryset = candidatos_del_circuito
             self.fields['candidato'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido}"
+            # Excluimos la opción en blanco de las edades
+            self.fields['edad'].choices = [choice for choice in self.fields['edad'].choices if choice[0] != '']

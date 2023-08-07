@@ -1,0 +1,21 @@
+{% extends 'bocadeurna_base.html' %}
+
+{% load static %}
+
+{% block content %}
+<br>
+<br>
+<div class="container text-center mt-5">
+  <div class="alert alert-success" role="alert">
+    <br>
+      <h1 class="mb-3">Registro Cargado Correctamente</h1>
+      <br>
+      <p class="mb-4"><b>¡Gracias por participar en la encuesta!</b></p>
+      <br>
+    </div>
+</div>
+<br><br>
+<div class="container text-center mt-5">
+<button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'carga_bocadeurna' %}'">Volver</button>
+</div>
+{% endblock %}

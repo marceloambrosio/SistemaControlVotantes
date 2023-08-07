@@ -73,9 +73,11 @@ def carga_boca_de_urna(request):
             else:
                 # Manejar el caso en el que no haya boletas de boca de urna asociadas al circuito del usuario
                 return render(request, 'error.html', {'error_message': 'No hay boletas de boca de urna asociadas a su circuito.'})
-            return redirect('carga_bocadeurna')
+            return redirect('carga_success_bocadeurna')
     else:
         form = DetalleBocaDeUrnaForm(circuito_usuario=circuito_usuario)  # Pasamos el circuito_usuario al formulario
+        # Excluir la opción en blanco de los candidatos
+        form.fields['candidato'].queryset = Candidato.objects.filter(circuito=circuito_usuario).exclude(nombre__isnull=True)
 
     context = {
         'bocas_de_urna': zip(bocas_de_urna, [DetalleBocaDeUrna.objects.filter(boca_de_urna=boca_de_urna) for boca_de_urna in bocas_de_urna]),
@@ -84,3 +86,8 @@ def carga_boca_de_urna(request):
     }
 
     return render(request, 'bocadeurna/carga_boca_de_urna.html', context)
+
+
+@login_required
+def carga_sucess_boca_de_urna(request):
+    return render(request, 'bocadeurna/success_boca_de_urna.html')

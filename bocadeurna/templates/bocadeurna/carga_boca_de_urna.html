@@ -6,23 +6,76 @@
 
 <br>
 <div class="container">
-<h1 class="text-center"><b>Boca de urna</b></h1>
-<h2 class="text-center">{{ circuito }}</h2>
+  <h1 class="text-center">Boca de urna</h1>
+  <h2 class="text-center"><b>{{ circuito }}</b></h2>
 
-<div class="row">
-  <div class="col-sm-8 offset-sm-2">
-<form method="post">
-<h2>Agregar nuevo detalle</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Guardar</button>
-</form>
-  <button class="btn float-end" style="background-color: #468B97">Cargar</button>
-  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'solicitar_numero_mesa' %}'">Volver</button>
-</form>
-</div>
-</div>
+  <br>
+  <div class="row">
+    <div class="col-sm-8 offset-sm-2">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <div class="options-container">
+          <h4>Edad</h4>
+          {% for value, label in form.edad.field.choices %}
+              <div class="btn-group-vertical" role="group" aria-label="Vertical radio toggle button group">
+                  <input type="radio" class="btn-check custom-btn" name="{{ form.edad.name }}" id="{{ form.edad.id_for_label }}_{{ value }}" value="{{ value }}">
+                  <label class="btn btn-outline-custom" for="{{ form.edad.id_for_label }}_{{ value }}">{{ label }}</label>
+              </div>
+          {% endfor %}
+        </div>
+      </div>
+        <div class="form-group">
+          <div class="options-container">
+          <h4>Candidato</h4>
+          {% for candidato in form.candidato.field.queryset %}
+              <div class="btn-group-vertical" role="group" aria-label="Vertical radio toggle button group">
+                  <input type="radio" class="btn-check custom-btn" name="{{ form.candidato.name }}" id="{{ form.candidato.id_for_label }}_{{ candidato.id }}" value="{{ candidato.id }}">
+                  <label class="btn btn-outline-custom" for="{{ form.candidato.id_for_label }}_{{ candidato.id }}">{{ candidato.nombre }} {{ candidato.apellido }}</label>
+              </div>
+          {% endfor %}
+        </div>
+      </div>
+        <br>
+        <div class="d-grid gap-2">
+          <button class="btn" style="background-color: #468B97" type="submit">Cargar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
+<style>
+  .btn-outline-custom {
+      border-color: #1D5B79;
+      color: #1D5B79;
+  }
+
+  .custom-btn:checked + .btn-outline-custom {
+      background-color: #1D5B79;
+      color: white;
+      border-color: #1D5B79;
+  }
+
+  .options-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Ajusta el valor según el espacio vertical deseado */
+}
+
+@media (min-width: 500px) { /* Agrega un media query para pantallas más anchas */
+    .options-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px; /* Ajusta el valor según el espacio horizontal deseado */
+    }
+}
+</style>
 {% endblock %}
