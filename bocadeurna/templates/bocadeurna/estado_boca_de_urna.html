@@ -10,89 +10,110 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    
+
 </head>
 
 <body>
     <br>
     <div class="mesas-header">
-        <h1>Estado de Boca de Urna - {{ circuito.localidad }}</h1>
-        <p>Total de personas en el circuito: {{ total_personas_circuito }}</p>
-        <p>Cantidad de registros de Boca de Urna: {{ cantidad_registros_boca_de_urna }}</p>
-        <canvas id="bocaDeUrnaChart" width="400" height="200"></canvas>
-
-
-        <button class="btn" style="background-color: #EF6262"
-            onclick="location.href='{% url 'circuitos_habilitados_reportes' %}'">Volver</button>
+        <h1>Estado de Boca de Urna - {{ circuito.localidad }} <button class="btn" style="background-color: #EF6262"
+                onclick="location.href='{% url 'circuitos_habilitados_reportes' %}'">Volver</button></h1>
+        <br>
+        <h5>Bocas de urna: {{ cantidad_registros_boca_de_urna }} - Total del padrón: {{ total_personas_circuito }} -
+            Porcentaje del padrón: {{ porcentaje|floatformat:2 }}%</h5>
+        <div class="col-md-10">
+            <div class="progress mt-4">
+                <div class="progress-bar" role="progressbar"
+                    style="width: {{ porcentaje }}%; background-color: {{ barColor }};">
+                    {{ porcentaje|floatformat:2 }}% - {{ cantidad_registros_boca_de_urna }} de {{
+                    total_personas_circuito }}
+                </div>
+            </div>
+            <br>
+            <canvas id="bocaDeUrnaChart" width="400" height="200"></canvas>
+        </div>
     </div>
 
-    <canvas id="miGrafico"></canvas>
-
-<script>
-    // Datos del gráfico desde el contexto de la vista
-    var chartData = {{ chart_data|safe }};
-
-    // Obtener los colores de los candidatos desde el contexto de la vista
-    var candidatoColors = JSON.parse('{{ colores_candidatos|safe }}');
-
-    // Obtener el contexto del canvas para el gráfico
-    var ctx = document.getElementById('bocaDeUrnaChart').getContext('2d');
-
-    // Crear los datos para el gráfico
-    var data = {
-        labels: chartData.labels,
-        datasets: [{
-            label: 'Cantidad de votos',
-            data: chartData.data,
-            backgroundColor: chartData.labels.map(label => candidatoColors[label] || '#000000'),
-            borderWidth: 1
-        }]
-    };
-
-    // Ordenar los datos de mayor a menor según la cantidad de votos
-    var sortedData = data.datasets[0].data.slice().sort((a, b) => b - a);
-    var sortedLabels = data.labels.slice().sort((a, b) => data.datasets[0].data[data.labels.indexOf(b)] - data.datasets[0].data[data.labels.indexOf(a)]);
-
-    // Ordenar los colores en el mismo orden que los datos clasificados
-    var sortedColors = sortedLabels.map(label => candidatoColors[label] || '#000000');
-
-    data.datasets[0].data = sortedData;
-    data.labels = sortedLabels;
-    data.datasets[0].backgroundColor = sortedColors;
-
-    var bocaDeUrnaChart = new Chart(ctx, {
-        type: 'bar',
-        data: data,
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                datalabels: {
-                    anchor: 'center',
-                    align: 'center',
-                    color: '#ffffff', // Color del texto dentro de la columna
-                    font: {
-                        size: '12' // Tamaño de la fuente para mostrar los votos
-                    },
-                    formatter: function(value) {
-                        return value; // Mostrar la cantidad de votos
-                        // O, para mostrar el porcentaje:
-                        // return (value / data.datasets[0].data.reduce((a, b) => a + b) * 100).toFixed(2) + '%';
+    <script>
+        var chartLabels = {{ chart_labels|safe }};
+        var chartData = {{ chart_data|safe }};
+        var candidatoColors = {{ colores_candidatos|safe }};
+        var porcentaje = {{ porcentaje|floatformat:2 }};
+    
+        var ctx = document.getElementById('bocaDeUrnaChart').getContext('2d');
+    
+        var data = {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Cantidad de votos',
+                data: chartData,
+                backgroundColor: chartLabels.map(label => candidatoColors[label] || '#000000'),
+                borderWidth: 1
+            }]
+        };
+    
+        var bocaDeUrnaChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        anchor: 'center',
+                        align: 'center',
+                        color: '#ffffff',
+                        font: {
+                            size: '12'
+                        },
+                        formatter: function(value) {
+                            return value;
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
                     }
                 }
-            },
-            // Opción para quitar la leyenda
-            plugins: {
-                legend: {
-                    display: false
-                }
+            }
+        });
+    
+        // Función para obtener el color según el porcentaje
+        function getColorForPercentage(percentage) {
+            if (percentage < 2) {
+                return "#EF6262";
+            } else if (percentage < 5) {
+                return "#F3AA60";
+            } else if (percentage < 10) {
+                return "#468B97";
+            } else {
+                return "green";
             }
         }
-    });
-</script>
+    
+        // Obtener el color según el porcentaje
+        var barColor = getColorForPercentage(porcentaje);
+    
+        // Obtener la barra de progreso
+        var progressBar = document.querySelector(".progress-bar");
+    
+        // Establecer el ancho de la barra de progreso según el porcentaje calculado
+        progressBar.style.width = porcentaje + "%";
+    
+        // Establecer el nuevo contenido en la barra de progreso
+        progressBar.innerHTML = porcentaje + "%";
+    
+        // Establecer el atributo data-percentage en la barra de progreso
+        progressBar.setAttribute("data-percentage", porcentaje);
+    
+        // Establecer el color de fondo de la barra de progreso
+        progressBar.style.backgroundColor = barColor;
+    </script>
+    
 </body>
 
 </html>

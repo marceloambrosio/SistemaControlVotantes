@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boca de urna {{ circuito.localidad }}</title>
+</head>
+<body>
+    <h1>Boca de Urna - {{ circuito.localidad }}</h1>
+    <h4>Bocas de urna: {{ cantidad_registros_boca_de_urna }}</h4>
+    <h4>Total del padrón: {{ total_personas_circuito }}</h4>
+    <h4>Porcentaje del padrón: {{ porcentaje|floatformat:2 }}%</h4>
+    
+    <!-- Incrustar la imagen del gráfico -->
+    <img src="{{ img_url }}" alt="Gráfico de Boca de Urna">
+    
+    <h2>Detalles de los candidatos:</h2>
+    <ul>
+        {% for candidato, votos in top_3_candidatos %}
+            <li>{{ candidato }} - {{ votos }} votos</li>
+        {% endfor %}
+        <li>Otros - {{ otros_votos }} votos</li>
+    </ul>
+</body>
+</html>

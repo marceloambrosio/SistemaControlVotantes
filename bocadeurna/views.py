@@ -33,19 +33,31 @@ class EstadoBocaDeUrnaView(View):
         votos = [detalles_boca_de_urna.filter(candidato=candidato).count() for candidato in candidatos]
         colores_candidatos = {candidato.nombre + " " + candidato.apellido: candidato.color for candidato in candidatos}
 
-        # Generar el gráfico con Chart.js
-        chart_data = {
-            'labels': nombres_candidatos,
-            'data': votos,
-        }
+        # Ordenar los candidatos por votos de mayor a menor
+        candidatos_ordenados = sorted(zip(nombres_candidatos, votos), key=lambda x: x[1], reverse=True)
+
+        # Tomar los 3 candidatos con más votos
+        top_3_candidatos = candidatos_ordenados[:3]
+
+        # Calcular los votos totales de los candidatos restantes (no incluidos en el top 3)
+        otros_votos = sum(votos for _, votos in candidatos_ordenados[3:])
+
+        # Crear los datos para el gráfico
+        chart_labels = [nombre for nombre, _ in top_3_candidatos] + ["Otros"]
+        chart_data = [votos for _, votos in top_3_candidatos] + [otros_votos]
+
+        # Calcular el porcentaje de registros de Boca de Urna con respecto a personas en el circuito
+        porcentaje = (cantidad_registros_boca_de_urna / total_personas_circuito) * 100
 
         # Contexto para la plantilla
         context = {
             'circuito': circuito,
             'total_personas_circuito': total_personas_circuito,
             'cantidad_registros_boca_de_urna': cantidad_registros_boca_de_urna,
-            'chart_data': chart_data,
-            'colores_candidatos': json.dumps(colores_candidatos)
+            'chart_labels': json.dumps(chart_labels),
+            'chart_data': json.dumps(chart_data),
+            'colores_candidatos': json.dumps(colores_candidatos),
+            'porcentaje': porcentaje
         }
         return render(request, 'bocadeurna/estado_boca_de_urna.html', context)
 
@@ -91,3 +103,4 @@ def carga_boca_de_urna(request):
 @login_required
 def carga_sucess_boca_de_urna(request):
     return render(request, 'bocadeurna/success_boca_de_urna.html')
+    

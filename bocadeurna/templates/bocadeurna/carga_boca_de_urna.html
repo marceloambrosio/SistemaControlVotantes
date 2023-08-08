@@ -38,8 +38,9 @@
       </div>
         <br>
         <div class="d-grid gap-2">
-          <button class="btn" style="background-color: #468B97" type="submit">Cargar</button>
+          <button id="cargar-btn" class="btn" style="background-color: #468B97" type="submit">Cargar</button>
         </div>
+        <br><br>
       </form>
     </div>
   </div>
@@ -70,7 +71,7 @@
     gap: 10px; /* Ajusta el valor según el espacio vertical deseado */
 }
 
-@media (min-width: 500px) { /* Agrega un media query para pantallas más anchas */
+@media (min-width: 576px) { /* Agrega un media query para pantallas más anchas */
     .options-container {
         flex-direction: row;
         flex-wrap: wrap;
@@ -78,4 +79,29 @@
     }
 }
 </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const edadRadios = document.querySelectorAll("input[name='edad']");
+      const candidatoRadios = document.querySelectorAll("input[name='candidato']");
+      const cargarBtn = document.getElementById("cargar-btn");
+  
+      function updateCargarButtonState() {
+          const selectedEdad = Array.from(edadRadios).some(radio => radio.checked);
+          const selectedCandidato = Array.from(candidatoRadios).some(radio => radio.checked);
+          
+          cargarBtn.disabled = !(selectedEdad && selectedCandidato);
+      }
+  
+      edadRadios.forEach(radio => {
+          radio.addEventListener("change", updateCargarButtonState);
+      });
+  
+      candidatoRadios.forEach(radio => {
+          radio.addEventListener("change", updateCargarButtonState);
+      });
+  
+      updateCargarButtonState(); // Inicializar el estado del botón al cargar la página
+  });
+  </script>
 {% endblock %}
