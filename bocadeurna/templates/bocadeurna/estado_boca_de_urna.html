@@ -34,6 +34,28 @@
         </div>
     </div>
 
+    <br><br>
+    <table class="table table-hover" style="width: 50%;">
+        <thead>
+            <tr>
+                <th>Candidato</th>
+                <th class="text-center">Cantidad de votos</th>
+                <th class="text-center">Porcentaje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for candidato in candidatos_ordenados %}
+            <tr>
+                <td>{{ candidato.0 }}</td>
+                <td class="text-center">{{ candidato.1 }}</td>
+                <td class="text-center">{{ candidato.2|floatformat:2 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+
     <script>
         var chartLabels = {{ chart_labels|safe }};
         var chartData = {{ chart_data|safe }};

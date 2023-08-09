@@ -36,15 +36,15 @@ class EstadoBocaDeUrnaView(View):
         # Ordenar los candidatos por votos de mayor a menor
         candidatos_ordenados = sorted(zip(nombres_candidatos, votos), key=lambda x: x[1], reverse=True)
 
-        # Tomar los 3 candidatos con más votos
-        top_3_candidatos = candidatos_ordenados[:3]
-
         # Calcular los votos totales de los candidatos restantes (no incluidos en el top 3)
         otros_votos = sum(votos for _, votos in candidatos_ordenados[3:])
 
+        # Calcular los porcentajes de votos para cada candidato
+        candidatos_ordenados_con_porcentaje = [(nombre, votos, (votos / cantidad_registros_boca_de_urna) * 100) for nombre, votos in candidatos_ordenados]
+
         # Crear los datos para el gráfico
-        chart_labels = [nombre for nombre, _ in top_3_candidatos] + ["Otros"]
-        chart_data = [votos for _, votos in top_3_candidatos] + [otros_votos]
+        chart_labels = [nombre for nombre, _, _ in candidatos_ordenados_con_porcentaje[:3]] + ["Otros"]
+        chart_data = [votos for _, votos, _ in candidatos_ordenados_con_porcentaje[:3]] + [otros_votos]
 
         # Calcular el porcentaje de registros de Boca de Urna con respecto a personas en el circuito
         porcentaje = (cantidad_registros_boca_de_urna / total_personas_circuito) * 100
@@ -57,9 +57,11 @@ class EstadoBocaDeUrnaView(View):
             'chart_labels': json.dumps(chart_labels),
             'chart_data': json.dumps(chart_data),
             'colores_candidatos': json.dumps(colores_candidatos),
-            'porcentaje': porcentaje
+            'porcentaje': porcentaje,
+            'candidatos_ordenados': candidatos_ordenados_con_porcentaje,
         }
         return render(request, 'bocadeurna/estado_boca_de_urna.html', context)
+
 
 
 @login_required
