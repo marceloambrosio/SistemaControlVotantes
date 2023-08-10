@@ -1,0 +1,129 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Estado de Mesas y Boca de Urna</title>
+
+    <style>
+        .mesas-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+    <br>
+    <div class="mesas-header">
+        <h1>Estado de Mesas y Boca de Urna - {{ circuito.localidad }}</h1>
+
+        <div class="select-columnas">
+            <select id="num_columnas" class="form-select" onchange="cambiarColumnas()">
+                <option value="1">1 columna</option>
+                <option value="2">2 columnas</option>
+                <option value="3">3 columnas</option>
+                <option value="4">4 columnas</option>
+                <option value="5">5 columnas</option>
+            </select>
+        </div>
+
+        <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuitos_habilitados_reportes' %}'">Volver</button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10">
+            <!-- Estado de Mesas -->
+            <div id="mesasContainer" class="row">
+                {% for mesa in mesas %}
+                <div class="mesa col-md-{{ column_width }}">
+                    <br>
+                    <h3>{{ mesa.num_mesa }}</h3>
+                    <div class="progress">
+                        {% if mesa.porcentaje_votos < 30 %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #EF6262;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                        {% elif mesa.porcentaje_votos < 60 %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #F3AA60;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                        {% elif mesa.porcentaje_votos == 100 %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #5DB75D;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                        {% else %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje_votos }}%; background-color: #468B97;" aria-valuenow="{{ mesa.porcentaje_votos }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje_votos }}%</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <!-- Estado de Boca de Urna -->
+            <br>
+            <br>
+            <h5>Bocas de urna: {{ cantidad_registros_boca_de_urna }}</h5> 
+            <h5>Porcentaje: {{ porcentaje|floatformat:2 }}%</h5> 
+            <br>
+            <table class="table table-hover" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Candidato</th>
+                        <th class="text-center">Votos</th>
+                        <th class="text-center">Porcentaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for candidato in candidatos_ordenados %}
+                    <tr>
+                        <td>{{ candidato.0 }}</td>
+                        <td class="text-center">{{ candidato.1 }}</td>
+                        <td class="text-center">{{ candidato.2|floatformat:2 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function cambiarColumnas() {
+            var numColumnas = parseInt($("#num_columnas").val());
+            var mesas = $(".mesa");
+            var totalMesas = mesas.length;
+            var mesasPorColumna = Math.ceil(totalMesas / numColumnas);
+
+            var columnasHtml = "";
+            for (var i = 0; i < totalMesas; i += mesasPorColumna) {
+                var columnaMesas = mesas.slice(i, i + mesasPorColumna).wrapAll("<div class='col'></div>").parent().get(0).outerHTML;
+                columnasHtml += columnaMesas;
+            }
+
+            $("#mesasContainer").html(columnasHtml);
+
+            // Guardar la selección actual en el localStorage
+            localStorage.setItem("num_columnas", numColumnas);
+        }
+
+        // Restaurar la selección del localStorage al cargar la página
+        $(document).ready(function() {
+            var numColumnasGuardadas = localStorage.getItem("num_columnas");
+            if (numColumnasGuardadas) {
+                $("#num_columnas").val(numColumnasGuardadas);
+            }
+
+            cambiarColumnas();
+
+            // Llamar a cambiarColumnas cada vez que cambie la selección
+            $("#num_columnas").on("change", cambiarColumnas);
+        });
+
+        // Refrescar la página cada 60 segundos
+        setTimeout(function() {
+            location.reload();
+        }, 60000);
+    </script>
+</body>
+</html>
+{% endblock %}

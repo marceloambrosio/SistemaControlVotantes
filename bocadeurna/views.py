@@ -40,14 +40,20 @@ class EstadoBocaDeUrnaView(View):
         otros_votos = sum(votos for _, votos in candidatos_ordenados[3:])
 
         # Calcular los porcentajes de votos para cada candidato
-        candidatos_ordenados_con_porcentaje = [(nombre, votos, (votos / cantidad_registros_boca_de_urna) * 100) for nombre, votos in candidatos_ordenados]
+        if cantidad_registros_boca_de_urna > 0:
+            candidatos_ordenados_con_porcentaje = [(nombre, votos, (votos / cantidad_registros_boca_de_urna) * 100) for nombre, votos in candidatos_ordenados]
+        else:
+            candidatos_ordenados_con_porcentaje = [(candidato.nombre + " " + candidato.apellido, 0, 0.0) for candidato in candidatos]
 
         # Crear los datos para el gráfico
         chart_labels = [nombre for nombre, _, _ in candidatos_ordenados_con_porcentaje[:3]] + ["Otros"]
         chart_data = [votos for _, votos, _ in candidatos_ordenados_con_porcentaje[:3]] + [otros_votos]
 
         # Calcular el porcentaje de registros de Boca de Urna con respecto a personas en el circuito
-        porcentaje = (cantidad_registros_boca_de_urna / total_personas_circuito) * 100
+        if cantidad_registros_boca_de_urna > 0:
+            porcentaje = (cantidad_registros_boca_de_urna / total_personas_circuito) * 100
+        else:
+            porcentaje = 0
 
         # Contexto para la plantilla
         context = {

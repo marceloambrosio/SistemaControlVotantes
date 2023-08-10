@@ -159,7 +159,10 @@ class CircuitoDetailView(View):
 
             for mesa in mesas:
                 persona_count = mesa.persona_set.count()
-                mesa.porcentaje_votos = round(mesa.votos_count / persona_count * 100, 2)
+                if persona_count > 0:
+                    mesa.porcentaje_votos = round(mesa.votos_count / persona_count * 100, 2)
+                else:
+                    mesa.porcentaje_votos = 0.0
 
             form = NumeroMesaForm()
             context = {
