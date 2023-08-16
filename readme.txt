@@ -18,3 +18,7 @@ Para weasyprint, instalar las siguientes dependencias de acuerdo al sistema oper
     En windows:
         Instalar GTK3 https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
         Crear entorno virtual una vez instalado
+
+Grupos de usuarios a crear
+    BocaDeUrna: Asignar usuarios al grupo que hagan boca de urna
+    Fiscales: Asignar usuario al grupo qu sean fiscales
