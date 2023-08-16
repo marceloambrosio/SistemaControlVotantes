@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.views import View
 from .models import DetalleBocaDeUrna, Candidato, BocaDeUrna
 from control.models import Circuito, Persona
@@ -11,6 +11,10 @@ import json
 @login_required(login_url='login')  # Reemplaza 'login' con la URL correspondiente a tu vista de inicio de sesión
 def index_bocadeurna(request):
     return render(request, 'index_bocadeurna.html')
+
+
+def user_in_group_boca_de_urna(user):
+    return user.groups.filter(name='BocaDeUrna').exists()
 
 
 class EstadoBocaDeUrnaView(View):
@@ -70,7 +74,7 @@ class EstadoBocaDeUrnaView(View):
 
 
 
-@login_required
+@user_passes_test(user_in_group_boca_de_urna, login_url='login')
 def carga_boca_de_urna(request):
     circuito_usuario = request.user.circuitos.first()
 
@@ -108,7 +112,7 @@ def carga_boca_de_urna(request):
     return render(request, 'bocadeurna/carga_boca_de_urna.html', context)
 
 
-@login_required
+@user_passes_test(user_in_group_boca_de_urna, login_url='login')
 def carga_sucess_boca_de_urna(request):
     return render(request, 'bocadeurna/success_boca_de_urna.html')
     

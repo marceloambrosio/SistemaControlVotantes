@@ -27,6 +27,8 @@ import datetime
 def index(request):
     if user_in_group(request.user):
         return redirect('solicitar_numero_mesa')
+    if user_in_group_boca_de_urna(request.user):
+        return redirect('carga_bocadeurna')
     else:
         circuitos = request.user.circuitos.all()
         context = {'circuitos': circuitos}
@@ -94,6 +96,9 @@ class PadronListView(View):
     
 def user_in_group(user):
     return user.groups.filter(name='Fiscales').exists()
+
+def user_in_group_boca_de_urna(user):
+    return user.groups.filter(name='BocaDeUrna').exists()
 
 @user_passes_test(user_in_group, login_url='login')
 def cambiar_voto(request, mesa_id):
