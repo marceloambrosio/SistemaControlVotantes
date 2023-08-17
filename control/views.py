@@ -220,7 +220,17 @@ class CircuitosHabilitadosView(View):
         context = {'circuitos': circuitos}
         return render(request, 'circuito/circuito_habilitado.html', context)
 
-
+class DetalleMesaView(View):
+    def get(self, request, mesa_id):
+        mesa = Mesa.objects.get(pk=mesa_id)
+        personas = Persona.objects.filter(mesa=mesa).order_by('num_orden')
+        
+        context = {
+            'mesa': mesa,
+            'personas': personas
+        }
+        
+        return render(request, 'mesa/detalle_mesa.html', context)
 
     
 class ExportarPDFPersonasSinVotoView(View):

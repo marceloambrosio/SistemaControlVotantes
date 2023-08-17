@@ -1,0 +1,21 @@
+{% extends 'fiscal_base.html' %}
+
+{% block content %}
+<br>
+  <h1 class="text-center">Mesa Nº {{ mesa.num_mesa }}   <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'cambiar_voto' mesa_id=mesa.pk %}'">Volver</button></h1>
+  <br>
+  <div class="referencia text-center">
+    <span class="referencia-text"><b>Referencia</b></span>
+    <br>
+    <button class="btn m-2" style="background-color: #468B97; color: white; cursor: default;">Votó</button>
+    <button class="btn m-2" style="background-color: #EF6262; color: white; cursor: default;">No votó</button>
+  </div>
+  <hr class="mt-4 mb-4">
+  <div class="personas-list">
+    {% for persona in personas %}
+      <button class="btn m-2" style="background-color: {% if persona.voto %}#468B97{% else %}#EF6262{% endif %}; color: white; cursor: default;">
+        {{ persona.num_orden }}
+      </button>
+    {% endfor %}
+  </div>
+{% endblock %}
