@@ -13,11 +13,24 @@
                 content: "Pag. " counter(page) "/" counter(pages);
             }
         }
-
+    
         /* Estilos adicionales */
         body {
             /* Asegúrate de dejar suficiente margen en la parte inferior para el pie de página */
             margin-bottom: 30mm;
+        }
+    
+        /* Estilos de la tabla */
+        table.table-all {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10mm; /* Espaciado adicional en la parte superior de la tabla */
+        }
+    
+        table.table-all th, table.table-all td {
+            border: none; /* Elimina los bordes existentes */
+            padding: 5px; /* Agrega un espacio interno a las celdas */
+            border-bottom: 1px solid gray; /* Línea inferior para separar los registros */
         }
     </style>
 </head>
@@ -27,9 +40,9 @@
 
 <body>
     
-    <table class="table table-striped" style="width: 100%;">
+    <table class="table table-all" style="width: 100%;">
         <thead>
-            <tr style="background-color: #468B97;">
+            <tr style="background-color: #DDDDDD;">
                 <th scope="col" style="width: 40%;">Apellido y nombre</th>
                 <th scope="col" style="width: 1%;">Edad</th>
                 <th scope="col" style="width: 33%;">Domicilio</th>

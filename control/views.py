@@ -66,7 +66,7 @@ class PadronDatatableView(BaseDatatableView):
 
 class PadronListView(View):
     def get(self, request, circuito_id, num_mesa):
-        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa)
+        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa).order_by('num_orden')
         circuito = Circuito.objects.get(pk=circuito_id)
         mesa = Mesa.objects.get(pk=num_mesa)  # Obtén el objeto mesa a partir del num_mesa
         context = {
@@ -81,9 +81,7 @@ class PadronListView(View):
             html_string = render_to_string('padron/padron_list_pdf.html', context)
 
             # Crea un objeto WeasyPrint a partir del HTML
-            bootstrap_css_path = finders.find('styles/css/bootstrap.min.css')
-            bootstrap_css = CSS(filename=bootstrap_css_path)
-            pdf = HTML(string=html_string).write_pdf(stylesheets=[bootstrap_css])
+            pdf = HTML(string=html_string).write_pdf()
 
             # Devuelve el PDF como respuesta
             response = HttpResponse(content_type='application/pdf')
@@ -236,7 +234,7 @@ class DetalleMesaView(View):
 class ExportarPDFPersonasSinVotoView(View):
     def get(self, request, circuito_id):
         circuito = get_object_or_404(Circuito, pk=circuito_id)
-        personas = Persona.objects.filter(mesa__escuela__circuito=circuito)
+        personas = Persona.objects.filter(mesa__escuela__circuito=circuito).order_by('domicilio')
         total_personas = personas.count()
         votantes = personas.filter(voto=True).count()
         no_votantes = total_personas - votantes
@@ -259,9 +257,7 @@ class ExportarPDFPersonasSinVotoView(View):
         html_string = render_to_string('padron/exportar_pdf_personas_sin_voto.html', context)
 
         # Crea un objeto WeasyPrint a partir del HTML
-        bootstrap_css_path = finders.find('styles/css/bootstrap.min.css')
-        bootstrap_css = CSS(filename=bootstrap_css_path)
-        pdf = HTML(string=html_string).write_pdf(stylesheets=[bootstrap_css])
+        pdf = HTML(string=html_string).write_pdf()
 
         # Devuelve el PDF como respuesta
         response = HttpResponse(content_type='application/pdf')
@@ -269,6 +265,34 @@ class ExportarPDFPersonasSinVotoView(View):
         response.write(pdf)
 
         return response
+    
+
+class ExportarPDFPersonasSinVotoMesaView(View):
+    def get(self, request, circuito_id, num_mesa):
+        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa, voto=False).order_by('num_orden')
+        circuito = Circuito.objects.get(pk=circuito_id)
+        mesa = Mesa.objects.get(pk=num_mesa)
+
+        context = {
+            'persona_list': personas,
+            'circuito_id': circuito_id,
+            'num_mesa': num_mesa,
+            'localidad': circuito.localidad
+        }
+
+        # Renderiza el contenido de la tabla a HTML utilizando el template
+        html_string = render_to_string('padron/padron_list_pdf.html', context)
+
+        # Crea un objeto WeasyPrint a partir del HTML
+        pdf = HTML(string=html_string).write_pdf()
+
+        # Devuelve el PDF como respuesta
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'filename="{} - Mesa {} - Personas que no votaron.pdf"'.format(circuito.localidad, mesa.num_mesa)
+        response.write(pdf)
+
+        return response
+
 
 class ExportarExcelPersonasSinVotoView(View):
     def get(self, request, circuito_id):

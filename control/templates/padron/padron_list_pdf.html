@@ -13,13 +13,27 @@
                 content: "Pag. " counter(page) "/" counter(pages);
             }
         }
-
+    
         /* Estilos adicionales */
         body {
             /* Asegúrate de dejar suficiente margen en la parte inferior para el pie de página */
             margin-bottom: 30mm;
         }
+    
+        /* Estilos de la tabla */
+        table.table-all {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10mm; /* Espaciado adicional en la parte superior de la tabla */
+        }
+    
+        table.table-all th, table.table-all td {
+            border: none; /* Elimina los bordes existentes */
+            padding: 5px; /* Agrega un espacio interno a las celdas */
+            border-bottom: 1px solid gray; /* Línea inferior para separar los registros */
+        }
     </style>
+    
 </head>
 <body>
 
@@ -27,9 +41,9 @@
         <h3>Padron Mesa Nº {{ num_mesa }}</h3>
 
 
-    <table class="table table-striped" style="width: 100%;">
+    <table class="table table-all " style="width: 100%;">
         <thead>
-            <tr style="background-color: #468B97;">
+            <tr style="background-color: #DDDDDD;">
                 <th scope="col" style="width: 34%;">Apellido y nombre</th>
                 <th scope="col" style="width: 34%;">Domicilio</th>
                 <th scope="col" style="width: 1%;">Clase</th>
@@ -40,7 +54,7 @@
         <tbody id="listPersona">
             {% for personas in persona_list %}
             <tr>
-                <td>{{personas.apellido}}, {{personas.nombre}}</td>
+                <td>{{personas.apellido}} {{personas.nombre}}</td>
                 <td>{{personas.domicilio}}</td>
                 <td>{{personas.clase}}</td>
                 <td>{{personas.mesa.escuela.nombre}} - Mesa: {{personas.mesa.num_mesa}}</td>
@@ -55,15 +69,5 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <style>
-        .padron-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-    </style>
-
-    <script src="{% static 'scripts/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

@@ -16,6 +16,7 @@ urlpatterns = [
     path('circuito_access_denied/', login_required(circuito_access_denied), name='circuito_access_denied'),
     path('circuitos_habilitados/', login_required(views.CircuitosHabilitadosView.as_view()), name='circuitos_habilitados'),
     path('exportar_pdf/<int:circuito_id>/<int:num_mesa>/', login_required(views.PadronListView.as_view()), name='exportar_pdf'),
+    path('exportar_pdf_personas_sin_voto_mesa/<int:circuito_id>/<int:num_mesa>/', views.ExportarPDFPersonasSinVotoMesaView.as_view(), name='exportar_pdf_personas_sin_voto_mesa'),
     path('exportar_pdf_personas_sin_voto/<int:circuito_id>/', login_required(views.ExportarPDFPersonasSinVotoView.as_view()), name='exportar_pdf_personas_sin_voto'),
     path('exportar_excel_personas_sin_voto/<int:circuito_id>/', login_required(views.ExportarExcelPersonasSinVotoView.as_view()), name='exportar_excel_personas_sin_voto'),
 ]
