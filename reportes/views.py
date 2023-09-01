@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from control.models import Mesa, Circuito
-from control.models import Circuito, Mesa, Persona
-from bocadeurna.models import DetalleBocaDeUrna, Candidato
+from control.models import Circuito, Mesa, Persona, Eleccion
+from bocadeurna.models import DetalleBocaDeUrna, Candidato, CandidatoEleccion
 import json
 
 # Create your views here.
@@ -34,7 +34,7 @@ class EstadoMesasView(View):
         return render(request, 'mesas/estado_mesas.html', context)
     
 class EstadoMesasBocaDeUrnaView(View):
-    def get(self, request, circuito_id):
+    def get(self, request, circuito_id, eleccion_id):
         circuito = Circuito.objects.get(pk=circuito_id)
         
         # Obtener los datos para el estado de mesas (similar a tu EstadoMesasView)
@@ -90,10 +90,11 @@ class EstadoMesasBocaDeUrnaView(View):
 
         return render(request, 'info/estado_mesa_y_boca_de_urna.html', context)
 
+
     
 class CircuitosHabilitadosView(View):
     def get(self, request):
         circuitos = request.user.circuitos.all()
-
         context = {'circuitos': circuitos}
         return render(request, 'circuitos/circuito_habilitado.html', context)
+

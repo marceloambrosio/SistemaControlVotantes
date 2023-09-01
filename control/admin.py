@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Seccion, Circuito, Escuela, Mesa, Persona, User
+from .models import Seccion, Circuito, Escuela, Mesa, Persona, User, Eleccion, TipoEleccion, Cargo
 from import_export.admin import ImportExportModelAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import Group
@@ -62,8 +62,21 @@ class CustomUserAdmin(BaseUserAdmin):
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
         ('Circuitos', {'fields': ('circuitos',)}),  # Agrega este campo
+        ('Elección', {'fields': ('eleccion',)}),
     )
     filter_horizontal = ('groups', 'user_permissions', 'circuitos')  # Permite una interfaz más amigable para seleccionar circuitos
+
+class CargoAdmin(admin.ModelAdmin):
+    search_fields = ('titulo'),
+    ordering = ['titulo']
+
+class TipoEleccionAdmin(admin.ModelAdmin):
+    search_fields = ('nombre'),
+    ordering = ['nombre','cargo']
+
+class EleccionAdmin(admin.ModelAdmin):
+    search_fields = ('fecha','circuito','tipo_eleccion'),
+    ordering = ['circuito','tipo_eleccion','fecha']
 
 admin.site.register(Seccion, SeccionAdmin)
 admin.site.register(Circuito, CircuitoAdmin)
@@ -74,3 +87,6 @@ admin.site.unregister(Group)
 admin.site.register(User, CustomUserAdmin)
 #admin.site.register(User, BaseUserAdmin)
 admin.site.register(Group, GroupAdmin)
+admin.site.register(Cargo, CargoAdmin)
+admin.site.register(TipoEleccion, TipoEleccionAdmin)
+admin.site.register(Eleccion, EleccionAdmin)

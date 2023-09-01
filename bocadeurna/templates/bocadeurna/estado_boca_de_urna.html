@@ -16,7 +16,7 @@
 <body>
     <br>
     <div class="mesas-header">
-        <h1>Boca de Urna - {{ circuito.localidad }} <button class="btn" style="background-color: #EF6262"
+        <h1>Boca de Urna - {{ circuito.localidad }} - {{ tipo_eleccion }} <button class="btn" style="background-color: #EF6262"
                 onclick="location.href='{% url 'circuitos_habilitados_reportes' %}'">Volver</button></h1>
         <br>
         <h5>Bocas de urna: {{ cantidad_registros_boca_de_urna }} - Total del padrón: {{ total_personas_circuito }} -

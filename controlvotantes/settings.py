@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'control',
     'reportes',
     'bocadeurna',
+    'computo',
 ]
 
 MIDDLEWARE = [

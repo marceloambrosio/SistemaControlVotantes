@@ -2,35 +2,42 @@
 
 {% block content %}
 <br>
-  <h1>Reportes</h1>
-  <h4>Circuitos Habilitados</h4>
-  <br>
-  <div class="container">
-    <div class="row">
-      <div class="col-8">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col" class="col-4">Circuito</th>
-              <th scope="col" class="col-4">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for circuito in circuitos %}
-            <tr>
-              <td>{{ circuito.num_circuito }} - {{ circuito.localidad }}</td>                                   
-              <td>
-                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'estado_mesas' circuito_id=circuito.num_circuito %}'">Mesas</button>
-                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'bocadeurna' circuito_id=circuito.num_circuito %}'">Boca de urna</button>
-                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'estado_mesas_boca_de_urna' circuito_id=circuito.num_circuito %}'">Mesas y Boca de urna</button>
-              </td>
-              
-            </tr>
+<h1>Reportes</h1>
+<h4>Circuitos Habilitados</h4>
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col" class="col-3">Circuito</th>
+            <th scope="col" class="col-9">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for circuito in circuitos %}
+            {% for eleccion in circuito.eleccion_set.all %}
+              <tr>
+                <td>{{ circuito.localidad }} ({{ eleccion.tipo_eleccion.nombre }})</td>
+                <td>
+                  <!-- Mostrar los botones correspondientes a esta elección -->
+                  <button class="btn" style="background-color: #468B97" type="button"
+                onclick="location.href='{% url 'estado_mesas' circuito_id=circuito.num_circuito %}'">Mesas</button>
+                  <button class="btn" style="background-color: #468B97" type="button"
+                    onclick="location.href='{% url 'bocadeurna' circuito_id=circuito.num_circuito eleccion_id=eleccion.pk %}'">Boca de urna</button>
+      
+                  <button class="btn" style="background-color: #468B97" type="button"
+                    onclick="location.href='{% url 'estado_mesas_boca_de_urna' circuito_id=circuito.num_circuito eleccion_id=eleccion.pk %}'">Mesas y Boca de urna</button>
+                </td>
+              </tr>
             {% endfor %}
-          </tbody>
-        </table>
-        <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'index' %}'">Volver</button>
-      </div>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+      <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'index' %}'">Volver</button>
     </div>
   </div>
+</div>
 {% endblock %}

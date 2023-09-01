@@ -63,8 +63,31 @@ class Persona(models.Model):
     def __str__(self):
         return str(self.num_orden).zfill(3) + " - " + self.apellido + ", " + self.nombre + " - DNI: " + str(self.dni) + " - Mesa Nº " + str(self.mesa.num_mesa).zfill(4) + " - " + self.mesa.escuela.circuito.localidad
     
+class Cargo(models.Model):
+    titulo = models.CharField()
+
+    def __str__(self):
+        return self.titulo
+    
+class TipoEleccion(models.Model):
+    nombre = models.CharField()
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nombre + " (" + self.cargo.titulo + ")"
+
+class Eleccion(models.Model):
+    fecha = models.DateField()
+    circuito = models.ForeignKey(Circuito, on_delete=models.CASCADE)
+    tipo_eleccion = models.ForeignKey(TipoEleccion, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.tipo_eleccion.nombre + " - " + self.circuito.localidad + " (" + str(self.fecha.year) + ")"
+    
 class User(AbstractUser):
     circuitos = models.ManyToManyField(Circuito, blank=True)
+    eleccion = models.ForeignKey(Eleccion, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.username
+    

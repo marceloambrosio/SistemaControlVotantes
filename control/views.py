@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import VotoForm, NumeroMesaForm
-from .models import Persona, Mesa, Circuito
+from .models import Persona, Mesa, Circuito, Eleccion
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import ListView
 from datetime import datetime, date
@@ -211,12 +211,11 @@ def calcular_porcentaje_votos_circuito(circuito):
 class CircuitosHabilitadosView(View):
     def get(self, request):
         circuitos = request.user.circuitos.all()
+        elecciones = Eleccion.objects.filter(circuito__in=circuitos)
 
-        for circuito in circuitos:
-            circuito.porcentaje_votos = calcular_porcentaje_votos_circuito(circuito)
-
-        context = {'circuitos': circuitos}
+        context = {'circuitos': circuitos, 'elecciones': elecciones}
         return render(request, 'circuito/circuito_habilitado.html', context)
+
 
 class DetalleMesaView(View):
     def get(self, request, mesa_id):
