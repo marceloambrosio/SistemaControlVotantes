@@ -1,9 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from control.models import Mesa, Circuito
-from control.models import Circuito, Mesa, Persona, Eleccion
-from bocadeurna.models import DetalleBocaDeUrna, Candidato, CandidatoEleccion
+from control.models import Mesa, Circuito, Mesa, Persona, Eleccion
+from bocadeurna.models import BocaDeUrna, DetalleBocaDeUrna, CandidatoEleccion
 import json
 
 # Create your views here.
@@ -35,10 +34,13 @@ class EstadoMesasView(View):
     
 class EstadoMesasBocaDeUrnaView(View):
     def get(self, request, circuito_id, eleccion_id):
-        circuito = Circuito.objects.get(pk=circuito_id)
+        # Obtener el circuito correspondiente al circuito_id
+        circuito = get_object_or_404(Circuito, pk=circuito_id)
         
-        # Obtener los datos para el estado de mesas (similar a tu EstadoMesasView)
+        # Obtener las mesas asociadas al circuito
         mesas = Mesa.objects.filter(escuela__circuito=circuito)
+
+        # Calcular el porcentaje de votos para cada mesa
         for mesa in mesas:
             persona_count = mesa.persona_set.count()
             if persona_count > 0:
@@ -46,21 +48,44 @@ class EstadoMesasBocaDeUrnaView(View):
                 mesa.porcentaje_votos = round(votos_count / persona_count * 100, 2)
             else:
                 mesa.porcentaje_votos = 0.0
+
+        # Obtener todas las elecciones en ese circuito
+        elecciones = Eleccion.objects.filter(circuito=circuito)
+
+        # Filtrar la elección correspondiente a eleccion_id, si existe
+        eleccion = elecciones.filter(pk=eleccion_id).first()
+
+        bocas_de_urna = BocaDeUrna.objects.filter(eleccion__circuito=circuito)
+
+
+        # Obtener el objeto TipoEleccion a través de la relación en Eleccion
+        tipo_eleccion = eleccion.tipo_eleccion.nombre
         
-        # Obtener los datos para el estado de boca de urna (similar a tu EstadoBocaDeUrnaView)
-        detalles_boca_de_urna = DetalleBocaDeUrna.objects.filter(boca_de_urna__circuito=circuito)
-        total_personas_circuito = Persona.objects.filter(mesa__escuela__circuito=circuito).count()
+        # Filtrar los detalles de boca de urna asociados al circuito y la elección seleccionada
+        detalles_boca_de_urna = DetalleBocaDeUrna.objects.filter(
+            boca_de_urna__in=bocas_de_urna,
+            candidato__in=CandidatoEleccion.objects.filter(eleccion=eleccion),
+        )
+
+        # Calcular la cantidad de registros de boca de urna del circuito y la elección seleccionada
         cantidad_registros_boca_de_urna = detalles_boca_de_urna.count()
-        candidatos = Candidato.objects.filter(circuito=circuito)
-        
+
+        # Calcular el total de personas en el circuito
+        total_personas_circuito = Persona.objects.filter(mesa__escuela__circuito=circuito).count()
+
+        # Obtener la lista de candidatos para este circuito y elección
+        candidatos = CandidatoEleccion.objects.filter(eleccion_id=eleccion_id)
+
+
         # Realizar los cálculos y operaciones necesarias para los datos de boca de urna
         candidatos_ordenados = []
         porcentaje = 0.0  # Valor por defecto en caso de que no haya registros de boca de urna
+        candidatos_ordenados_con_porcentaje = []
 
         if total_personas_circuito > 0:
-            chart_labels = [candidato.nombre + " " + candidato.apellido for candidato in candidatos]
+            chart_labels = [candidato.candidato.nombre + " " + candidato.candidato.apellido for candidato in candidatos]
             chart_data = [detalles_boca_de_urna.filter(candidato=candidato).count() for candidato in candidatos]
-            colores_candidatos = {candidato.nombre + " " + candidato.apellido: candidato.color for candidato in candidatos}
+            colores_candidatos = {candidato.candidato.nombre + " " + candidato.candidato.apellido: candidato.candidato.color for candidato in candidatos}
             
             candidatos_ordenados = sorted(zip(chart_labels, chart_data), key=lambda x: x[1], reverse=True)
             candidatos_ordenados_con_porcentaje = []
@@ -68,7 +93,7 @@ class EstadoMesasBocaDeUrnaView(View):
             if cantidad_registros_boca_de_urna > 0:
                 candidatos_ordenados_con_porcentaje = [(nombre, votos, (votos / cantidad_registros_boca_de_urna) * 100) for nombre, votos in candidatos_ordenados]
             else:
-                candidatos_ordenados_con_porcentaje = [(candidato.nombre + " " + candidato.apellido, 0, 0.0) for candidato in candidatos]
+                candidatos_ordenados_con_porcentaje = [(candidato.candidato.nombre + " " + candidato.candidato.apellido, 0, 0.0) for candidato in candidatos]
 
             
             if cantidad_registros_boca_de_urna > 0:
@@ -86,10 +111,10 @@ class EstadoMesasBocaDeUrnaView(View):
             'colores_candidatos': json.dumps(colores_candidatos) if total_personas_circuito > 0 else json.dumps({}),
             'porcentaje': porcentaje,
             'candidatos_ordenados': candidatos_ordenados_con_porcentaje,
+            'tipo_eleccion': tipo_eleccion,
         }
 
         return render(request, 'info/estado_mesa_y_boca_de_urna.html', context)
-
 
     
 class CircuitosHabilitadosView(View):
