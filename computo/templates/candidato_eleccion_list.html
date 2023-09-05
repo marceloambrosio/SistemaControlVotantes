@@ -1,0 +1,19 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+
+<br>
+<h1>Candidatos de Elección</h1>
+<br>
+<ul>
+    {% for candidato_eleccion in candidatos_eleccion %}
+    <li>
+        {{ candidato_eleccion.candidato.nombre }} {{ candidato_eleccion.candidato.apellido }}
+        (Orden: {{ candidato_eleccion.orden }})
+    </li>
+    {% empty %}
+    <li>No hay candidatos disponibles para esta elección y mesa.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

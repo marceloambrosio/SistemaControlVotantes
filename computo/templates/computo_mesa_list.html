@@ -1,0 +1,31 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+
+<br>
+<h1>Lista de Mesas para el Computo</h1>
+<br>
+<table class="table table-hover">
+    <thead>
+        <tr>
+          <th scope="col" class="col-6">Mesa</th>
+          <th scope="col" class="col-6">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mesa in mesas %}
+            <tr>
+              <td>Mesa Nº {{ mesa.num_mesa }} - (Escuela {{ mesa.escuela.nombre }})</td>
+              <td>
+                <!-- Mostrar los botones correspondientes a esta elección -->
+                <button class="btn" style="background-color: #468B97" type="button"
+              onclick="/mesa/{{ mesa.id }}/">Ver votos</button>
+              </td>
+            </tr>
+            {% empty %}
+            <li>No hay mesas disponibles para este computo.</li>
+            {% endfor %}
+        </tbody>
+</table>
+
+{% endblock %}

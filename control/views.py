@@ -66,13 +66,14 @@ class PadronDatatableView(BaseDatatableView):
 
 class PadronListView(View):
     def get(self, request, circuito_id, num_mesa):
-        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa).order_by('num_orden')
         circuito = Circuito.objects.get(pk=circuito_id)
-        mesa = Mesa.objects.get(pk=num_mesa)  # Obtén el objeto mesa a partir del num_mesa
+        mesa = Mesa.objects.get(id=num_mesa)  # Obtén el objeto mesa a partir del id
+        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=mesa.num_mesa).order_by('num_orden')
+
         context = {
             'persona_list': personas,
             'circuito_id': circuito_id,
-            'num_mesa': num_mesa,
+            'num_mesa': mesa.num_mesa,
             'localidad': circuito.localidad
         }
 
@@ -135,7 +136,7 @@ def solicitar_numero_mesa(request):
             numero_mesa = form.cleaned_data['numero_mesa']
             mesa = Mesa.objects.filter(num_mesa=numero_mesa).first()
             if mesa:
-                return redirect('cambiar_voto', mesa_id=numero_mesa)
+                return redirect('cambiar_voto', mesa_id=mesa.id) 
             else:
                 return redirect('mesa_no_existe')
     else:

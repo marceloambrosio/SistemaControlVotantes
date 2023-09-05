@@ -37,7 +37,7 @@ class Escuela(models.Model):
         return self.nombre + " (" + self.direccion + ") - " + self.circuito.localidad + " (" + self.circuito.seccion.departamento + ")"
     
 class Mesa(models.Model):
-    num_mesa = models.IntegerField(primary_key=True)
+    num_mesa = models.IntegerField()
     escuela = models.ForeignKey(Escuela, on_delete=models.CASCADE)
 
     def __str__(self):
