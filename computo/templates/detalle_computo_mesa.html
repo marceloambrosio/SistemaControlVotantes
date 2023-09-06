@@ -1,0 +1,32 @@
+{% extends "control_base.html" %}
+
+{% block content %}
+<br>
+  <h1>Computo Mesa Nº {{ mesa }}</h1>
+  <br>
+  <form method="post">
+    {% csrf_token %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Candidato</th>
+          <th>Partido</th>
+          <th>Cantidad de Votos</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for candidato in candidatos %}
+          <tr>
+            <td>{{ candidato.candidato.nombre }} {{ candidato.candidato.apellido }}</td>
+            <td>{{ candidato.candidato.partido.nombre }}</td>
+            <td>
+                <input class="form-control" type="number" name="cantidad_voto_{{ candidato.candidato.id }}" value="{{ candidato.cantidad_voto|default:'' }}">
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button id="cargar-btn" class="btn float-end" style="background-color: #468B97" type="submit">Cargar votos</button>
+  </form>
+{% endblock %}
+

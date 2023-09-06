@@ -46,7 +46,7 @@ class DetalleComputo(models.Model):
     computo = models.ForeignKey(Computo, on_delete=models.CASCADE)
     mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
     candidato_eleccion = models.ForeignKey(CandidatoEleccion, on_delete=models.CASCADE)
-    cantidad_voto = models.PositiveIntegerField()
+    cantidad_voto = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return self.computo.eleccion.circuito.localidad + " (" + self.computo.eleccion.tipo_eleccion.nombre + ") - Mesa Nº " + str(self.mesa.num_mesa) + " - " + str(self.cantidad_voto) + " votos"
+        return self.computo.eleccion.circuito.localidad + " (" + self.computo.eleccion.tipo_eleccion.nombre + ") - Mesa Nº " + str(self.mesa.num_mesa) + " - " + self.candidato_eleccion.candidato.nombre + " " + self.candidato_eleccion.candidato.apellido + " - " + str(self.cantidad_voto) + " votos"
