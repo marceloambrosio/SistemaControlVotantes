@@ -2,7 +2,10 @@
 
 {% block content %}
 <br>
-  <h1>Computo Mesa Nº {{ mesa }}</h1>
+<div class="padron-header">
+  <h2>Computo Mesa Nº {{ mesa }}</h2>
+  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'computo_mesa_list' computo_id=computo %}'">Volver</button>
+</div>
   <br>
   <form method="post">
     {% csrf_token %}
@@ -20,13 +23,34 @@
             <td>{{ candidato.candidato.nombre }} {{ candidato.candidato.apellido }}</td>
             <td>{{ candidato.candidato.partido.nombre }}</td>
             <td>
-                <input class="form-control" type="number" name="cantidad_voto_{{ candidato.candidato.id }}" value="{{ candidato.cantidad_voto|default:'' }}">
+                <input class="form-control" type="number" name="cantidad_voto_{{ candidato.candidato.id }}" value="{{ candidato.cantidad_voto}}">
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
     <button id="cargar-btn" class="btn float-end" style="background-color: #468B97" type="submit">Cargar votos</button>
+    <button type="button" id="completar-con-0" class="btn float-end" style="background-color: #F3AA60">Completar con 0</button>
   </form>
+
+  <style>
+    .padron-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+
+<script>
+    document.getElementById('completar-con-0').addEventListener('click', function() {
+      // Recorre todos los campos de entrada y establece su valor en "0" si están vacíos
+      var inputs = document.querySelectorAll('input[type="number"]');
+      for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].value.trim() === '') {
+          inputs[i].value = '0';
+        }
+      }
+    });
+  </script>
 {% endblock %}
 

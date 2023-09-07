@@ -26,6 +26,7 @@ class ComputoMesaListView(ListView):
         # Usamos la Seccion para obtener todas las mesas
         mesas = Mesa.objects.filter(escuela__circuito__seccion=seccion)
         context['mesas'] = mesas
+        context['computo'] = computo
 
         return context
     
@@ -60,7 +61,7 @@ class DetalleComputoMesaView(View):
                 'cantidad_voto': cantidad_voto.cantidad_voto if cantidad_voto else None
             })
 
-        return render(request, self.template_name, {'candidatos': candidatos_con_valor, 'mesa': mesa_id})
+        return render(request, self.template_name, {'candidatos': candidatos_con_valor, 'mesa': mesa_id, 'computo':computo_id})
 
     
     def post(self, request, computo_id, mesa_id):
@@ -69,12 +70,15 @@ class DetalleComputoMesaView(View):
         
         for candidato in candidatos:
             nombre_campo = f'cantidad_voto_{candidato.candidato.id}'
-            cantidad_voto = request.POST.get(nombre_campo, 0)
+            cantidad_voto = request.POST.get(nombre_campo)
             
-            try:
-                cantidad_voto = int(cantidad_voto)
-            except ValueError:
-                cantidad_voto = 0
+            if cantidad_voto == '':
+                cantidad_voto = None
+            else:
+                try:
+                    cantidad_voto = int(cantidad_voto)
+                except ValueError:
+                    cantidad_voto = None
 
             detalle, created = DetalleComputo.objects.get_or_create(computo=computo, mesa_id=mesa_id, candidato_eleccion=candidato)
             detalle.cantidad_voto = cantidad_voto

@@ -8,19 +8,18 @@
 <table class="table table-hover">
     <thead>
         <tr>
-          <th scope="col" class="col-6">Mesa</th>
-          <th scope="col" class="col-6">Acciones</th>
+          <th scope="col" class="col-5">Mesa</th>
+          <th scope="col" class="col-4">Porcentaje Carga</th>
+          <th scope="col" class="col-3">Acciones</th>
         </tr>
       </thead>
       <tbody>
         {% for mesa in mesas %}
             <tr>
               <td>Mesa Nº {{ mesa.num_mesa }} - (Escuela {{ mesa.escuela.nombre }})</td>
+              <td>Mesa Nº {{ mesa.num_mesa }} - (Escuela {{ mesa.escuela.nombre }})</td>
               <td>
-                <!-- Mostrar los botones correspondientes a esta elección -->
-                <button class="btn" style="background-color: #468B97" type="button"
-                onclick="">Cargar votos</button>
-
+                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'detalle_computo_mesa' computo_id=computo.id mesa_id=mesa.id %}'">Cargar votos</button>
               </td>
             </tr>
             {% empty %}
