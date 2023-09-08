@@ -3,8 +3,8 @@
 {% block content %}
 <br>
 <div class="padron-header">
-  <h2>Computo Mesa Nº {{ mesa }}</h2>
-  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'computo_mesa_list' computo_id=computo %}'">Volver</button>
+  <h2>Computo Mesa Nº {{ mesa.num_mesa }} - {{ cargo.titulo }}</h2>
+  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'computo_mesa_list' computo_id=computo.id %}'">Volver</button>
 </div>
   <br>
   <form method="post">

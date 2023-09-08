@@ -91,17 +91,22 @@ class DetalleComputoMesaView(View):
     def get(self, request, computo_id, mesa_id, cargo_id):
         computo = Computo.objects.get(pk=computo_id)
         candidatos = CandidatoEleccion.objects.filter(eleccion=computo.eleccion, cargo_id=cargo_id)
+        cargo = Cargo.objects.get(pk=cargo_id)
 
         candidatos_con_valor = []
 
+        # Obtén el objeto Mesa de la misma manera que en la vista ComputoMesaListView
+        mesa = Mesa.objects.get(pk=mesa_id)
+
         for candidato in candidatos:
-            cantidad_voto = candidato.detallecomputo_set.filter(computo=computo, mesa_id=mesa_id).first()
+            cantidad_voto = candidato.detallecomputo_set.filter(computo=computo, mesa=mesa).first()
             candidatos_con_valor.append({
                 'candidato': candidato.candidato,
                 'cantidad_voto': cantidad_voto.cantidad_voto if cantidad_voto else None
             })
 
-        return render(request, self.template_name, {'candidatos': candidatos_con_valor, 'mesa': mesa_id, 'computo':computo_id})
+        return render(request, self.template_name, {'candidatos': candidatos_con_valor, 'mesa': mesa, 'computo':computo, 'cargo':cargo})
+
 
     
     def post(self, request, computo_id, mesa_id, cargo_id):
