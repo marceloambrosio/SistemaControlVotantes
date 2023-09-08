@@ -71,10 +71,9 @@ class Cargo(models.Model):
     
 class TipoEleccion(models.Model):
     nombre = models.CharField()
-    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.nombre + " (" + self.cargo.titulo + ")"
+        return self.nombre
 
 class Eleccion(models.Model):
     fecha = models.DateField()

@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, View
-from .models import Computo, CandidatoEleccion, DetalleComputo
-from control.models import Mesa, Eleccion, Seccion
+from .models import Computo, CandidatoEleccion, DetalleComputo, Candidato
+from control.models import Mesa, Eleccion, Seccion, Cargo
 from .forms import VotosForm
 from django.http import Http404
+from django.db.models import Count, F, ExpressionWrapper, FloatField, Value, Case, When, Sum, IntegerField
+from django.db.models.functions import Coalesce
 
 # Create your views here.
 
@@ -17,18 +19,56 @@ class ComputoMesaListView(ListView):
         return Computo.objects.filter(id=computo_id)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        computo = context['computos'][0]  # Obtenemos el primer objeto de la lista
+            context = super().get_context_data(**kwargs)
+            computo = context['computos'][0]  # Obtenemos el primer objeto de la lista
 
-        # Usamos la relación Eleccion para obtener la Seccion
-        seccion = computo.eleccion.circuito.seccion
+            # Usamos la relación Eleccion para obtener la Seccion
+            seccion = computo.eleccion.circuito.seccion
 
-        # Usamos la Seccion para obtener todas las mesas
-        mesas = Mesa.objects.filter(escuela__circuito__seccion=seccion)
-        context['mesas'] = mesas
-        context['computo'] = computo
+            # Obtén los cargos disponibles para esta elección
+            cargos_disponibles = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct()
 
-        return context
+            # Usamos la Sección para obtener todas las mesas
+            mesas = Mesa.objects.filter(escuela__circuito__seccion=seccion)
+
+            # Calcula el porcentaje de carga para cada mesa
+            for mesa in mesas:
+                total_candidatos = 0
+                total_cargados = 0
+
+                for cargo in cargos_disponibles:
+                    candidatos_cargo = CandidatoEleccion.objects.filter(
+                        eleccion=computo.eleccion,
+                        cargo=cargo
+                    )
+
+                    total_candidatos_cargo = candidatos_cargo.count()
+
+                    if total_candidatos_cargo > 0:
+                        total_candidatos += total_candidatos_cargo
+
+                        total_cargados_cargo = mesa.detallecomputo_set.filter(
+                            computo=computo,
+                            candidato_eleccion__in=candidatos_cargo,
+                            cantidad_voto__isnull=False
+                        ).count()
+
+                        total_cargados += total_cargados_cargo
+
+                if total_candidatos > 0:
+                    porcentaje_mesa = (total_cargados / total_candidatos) * 100
+                else:
+                    porcentaje_mesa = 0
+
+                mesa.porcentaje = porcentaje_mesa
+
+            context['mesas'] = mesas
+            context['computo'] = computo
+            context['cargos_disponibles'] = cargos_disponibles
+
+            return context
+
+    
     
 class CandidatoEleccionListView(ListView):
     model = CandidatoEleccion
@@ -48,9 +88,9 @@ class CandidatoEleccionListView(ListView):
 class DetalleComputoMesaView(View):
     template_name = 'detalle_computo_mesa.html'
 
-    def get(self, request, computo_id, mesa_id):
+    def get(self, request, computo_id, mesa_id, cargo_id):
         computo = Computo.objects.get(pk=computo_id)
-        candidatos = CandidatoEleccion.objects.filter(eleccion=computo.eleccion)
+        candidatos = CandidatoEleccion.objects.filter(eleccion=computo.eleccion, cargo_id=cargo_id)
 
         candidatos_con_valor = []
 
@@ -64,14 +104,15 @@ class DetalleComputoMesaView(View):
         return render(request, self.template_name, {'candidatos': candidatos_con_valor, 'mesa': mesa_id, 'computo':computo_id})
 
     
-    def post(self, request, computo_id, mesa_id):
+    def post(self, request, computo_id, mesa_id, cargo_id):
         computo = Computo.objects.get(pk=computo_id)
-        candidatos = CandidatoEleccion.objects.filter(eleccion=computo.eleccion)
+        candidatos = CandidatoEleccion.objects.filter(eleccion=computo.eleccion, cargo_id=cargo_id)
         
         for candidato in candidatos:
             nombre_campo = f'cantidad_voto_{candidato.candidato.id}'
             cantidad_voto = request.POST.get(nombre_campo)
             
+            # Manejar el caso cuando cantidad_voto es un string vacío
             if cantidad_voto == '':
                 cantidad_voto = None
             else:
@@ -80,50 +121,15 @@ class DetalleComputoMesaView(View):
                 except ValueError:
                     cantidad_voto = None
 
-            detalle, created = DetalleComputo.objects.get_or_create(computo=computo, mesa_id=mesa_id, candidato_eleccion=candidato)
+            # Intentar obtener el primer objeto DetalleComputo para esta combinación
+            detalle, created = DetalleComputo.objects.get_or_create(
+                computo=computo,
+                mesa_id=mesa_id,
+                candidato_eleccion=candidato
+            )
+
+            # Establecer el valor de cantidad_voto en el objeto DetalleComputo
             detalle.cantidad_voto = cantidad_voto
             detalle.save()
 
         return redirect('computo_mesa_list', computo_id=computo_id)
-
-
-def detalle_computo_mesa(request, computo_id, mesa_id):
-    computo = Computo.objects.get(id=computo_id)
-    mesa = Mesa.objects.get(id=mesa_id)
-
-    detalles = DetalleComputo.objects.filter(computo=computo, mesa=mesa)
-    candidatos = CandidatoEleccion.objects.filter(eleccion=computo.eleccion).order_by('orden')
-
-    # Creamos un diccionario para almacenar la cantidad de votos por candidato
-    votos_por_candidato = {}
-    for candidato in candidatos:
-        detalle = detalles.filter(candidato_eleccion=candidato).first()
-        votos_por_candidato[candidato.id] = detalle.cantidad_voto if detalle else 0
-
-    # Procesar el formulario enviado
-    if request.method == 'POST':
-        form = VotosForm(request.POST)
-        if form.is_valid():
-            for candidato in candidatos:
-                cantidad_voto = form.cleaned_data[f'votos_{candidato.id}']
-                detalle, created = DetalleComputo.objects.get_or_create(
-                    computo=computo,
-                    mesa=mesa,
-                    candidato_eleccion=candidato
-                )
-                detalle.cantidad_voto = cantidad_voto
-                detalle.save()
-            return redirect('detalle_computo_mesa', computo_id=computo_id, mesa_id=mesa_id)
-
-    else:
-        form = VotosForm(initial=votos_por_candidato)  # Inicializa el formulario con los votos existentes
-
-    context = {
-        'computo': computo,
-        'mesa': mesa,
-        'candidatos': candidatos,
-        'votos_por_candidato': votos_por_candidato,
-        'form': form,  # Pasa el formulario al contexto
-    }
-
-    return render(request, 'detalle_computo_mesa.html', context)

@@ -23,6 +23,7 @@ class Candidato(models.Model):
 class CandidatoEleccion(models.Model):
     eleccion = models.ForeignKey(Eleccion, on_delete=models.CASCADE)
     candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE)
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
     orden = models.PositiveIntegerField()
 
     @classmethod
@@ -33,7 +34,7 @@ class CandidatoEleccion(models.Model):
         )
 
     def __str__(self):
-        return self.eleccion.circuito.localidad + " - " + self.candidato.apellido + " " + self.candidato.nombre + " (Orden: " + str(self.orden) + ")"
+        return self.eleccion.circuito.localidad + " - " + self.candidato.apellido + " " + self.candidato.nombre + " - " + self.cargo.titulo + " (Orden: " + str(self.orden) + ")"
 
 class Computo(models.Model):
     fecha = models.DateField()

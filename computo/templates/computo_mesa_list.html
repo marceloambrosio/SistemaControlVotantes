@@ -3,29 +3,45 @@
 {% block content %}
 
 <br>
-<h1>Lista de Mesas para el Computo</h1>
+<h1>Mesas para el Computo de {{ computo.eleccion.circuito.localidad }}</h1>
 <br>
 <table class="table table-hover">
     <thead>
         <tr>
-          <th scope="col" class="col-5">Mesa</th>
-          <th scope="col" class="col-4">Porcentaje Carga</th>
-          <th scope="col" class="col-3">Acciones</th>
+          <th scope="col" class="col-4">Mesa</th>
+          <th scope="col" class="col-2">Porcentaje Carga</th>
+          <th scope="col" class="col-6">Cargar votos</th>
         </tr>
       </thead>
       <tbody>
         {% for mesa in mesas %}
             <tr>
-              <td>Mesa Nº {{ mesa.num_mesa }} - (Escuela {{ mesa.escuela.nombre }})</td>
-              <td>Mesa Nº {{ mesa.num_mesa }} - (Escuela {{ mesa.escuela.nombre }})</td>
-              <td>
-                <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'detalle_computo_mesa' computo_id=computo.id mesa_id=mesa.id %}'">Cargar votos</button>
-              </td>
+                <td>Mesa Nº {{ mesa.num_mesa }} - (Escuela {{ mesa.escuela.nombre }})</td>
+                <td>
+                    <div class="progress">
+                        {% if mesa.porcentaje < 30 %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje }}%; background-color: #EF6262;" aria-valuenow="{{ mesa.porcentaje }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje }}%</div>
+                        {% elif mesa.porcentaje < 60 %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje }}%; background-color: #F3AA60;" aria-valuenow="{{ mesa.porcentaje }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje }}%</div>
+                        {% elif mesa.porcentaje == 100 %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje }}%; background-color: #5DB75D;" aria-valuenow="{{ mesa.porcentaje }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje }}%</div>
+                        {% else %}
+                            <div class="progress-bar" role="progressbar" style="width: {{ mesa.porcentaje }}%; background-color: #468B97;" aria-valuenow="{{ mesa.porcentaje }}" aria-valuemin="0" aria-valuemax="100">{{ mesa.porcentaje }}%</div>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                  {% for cargo in cargos_disponibles %}
+                  <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'detalle_computo_mesa' computo_id=computo.id mesa_id=mesa.id cargo_id=cargo.id %}'">{{ cargo.titulo }}</button>
+                  {% endfor %}
+                </td>
             </tr>
-            {% empty %}
-            <li>No hay mesas disponibles para este computo.</li>
-            {% endfor %}
-        </tbody>
+        {% empty %}
+        <li>No hay mesas disponibles para este computo.</li>
+        {% endfor %}
+    </tbody>
+    
+    
 </table>
 
 {% endblock %}

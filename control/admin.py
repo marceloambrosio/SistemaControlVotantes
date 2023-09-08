@@ -72,7 +72,7 @@ class CargoAdmin(admin.ModelAdmin):
 
 class TipoEleccionAdmin(admin.ModelAdmin):
     search_fields = ('nombre'),
-    ordering = ['nombre','cargo']
+    ordering = ['nombre']
 
 class EleccionAdmin(admin.ModelAdmin):
     search_fields = ('fecha','circuito','tipo_eleccion'),
