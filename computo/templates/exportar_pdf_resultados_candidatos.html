@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Resultados de Candidatos</title>
+    
+    <style>
+        @page {
+            /* Definir encabezado y pie de página */
+            @top-right {
+                content: "Pag. " counter(page) "/" counter(pages);
+            }
+        }
+    
+        /* Estilos adicionales */
+        body {
+            /* Asegúrate de dejar suficiente margen en la parte inferior para el pie de página */
+            margin-bottom: 30mm;
+        }
+    
+        /* Estilos de la tabla */
+        table.table-all {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10mm; /* Espaciado adicional en la parte superior de la tabla */
+        }
+    
+        table.table-all th, table.table-all td {
+            border: none; /* Elimina los bordes existentes */
+            padding: 5px; /* Agrega un espacio interno a las celdas */
+            border-bottom: 1px solid gray; /* Línea inferior para separar los registros */
+        }
+    </style>
+</head>
+<body>
+    <h1>Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}</h1>
+    
+    <h4>Mesas escrutadas {{ mesas_escrutadas }} de {{ mesas_totales }} ({{porcentaje_mesas_escrutadas}}%)</h4>
+
+    {% for resultado_cargo in resultados_cargos %}
+    <h4>{{ resultado_cargo.cargo }} </h4>
+    Total de votos: {{ resultado_cargo.total_votos }}
+    <table class="table table-all " style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Candidato</th>
+                <th>Partido</th>
+                <th>Votos</th>
+                <th>Porcentaje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resultado in resultado_cargo.resultados %}
+            <tr>
+                <td>{{ resultado.candidato.candidato.nombre }} {{ resultado.candidato.candidato.apellido }}</td>
+                <td>{{ resultado.candidato.candidato.partido.nombre }}</td>
+                <td>{{ resultado.cantidad_voto }}</td>
+                <td>{{ resultado.porcentaje|floatformat:2 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+</body>
+</html>

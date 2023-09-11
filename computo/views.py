@@ -6,6 +6,9 @@ from .forms import VotosForm
 from django.http import Http404
 from django.db.models import Count, F, ExpressionWrapper, FloatField, Value, Case, When, Sum, IntegerField
 from django.db.models.functions import Coalesce
+from django.http import HttpResponse
+from django.template.loader import get_template
+from weasyprint import HTML
 
 # Create your views here.
 
@@ -148,7 +151,8 @@ class ResultadosCandidatosView(View):
         cargos = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct()
 
         mesas_totales = Mesa.objects.filter(escuela__circuito=computo.eleccion.circuito).count()
-        mesas_escrutadas = DetalleComputo.objects.filter(computo=computo, cantidad_voto__isnull=False).values('mesa__escuela__circuito').distinct().count()
+        mesas_escrutadas = Mesa.objects.filter(detallecomputo__computo=computo, detallecomputo__cantidad_voto__isnull=False).distinct().count()
+
 
 
         if mesas_totales == 0:
@@ -207,3 +211,86 @@ class ResultadosCandidatosView(View):
             'mesas_escrutadas': mesas_escrutadas,
             'porcentaje_mesas_escrutadas': porcentaje_mesas_escrutadas
         })
+
+
+
+class ExportarPDFResultadosCandidatosView(View):
+    def get(self, request, computo_id):
+        computo = Computo.objects.get(pk=computo_id)
+        cargos = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct()
+
+        mesas_totales = Mesa.objects.filter(escuela__circuito=computo.eleccion.circuito).count()
+        mesas_escrutadas = Mesa.objects.filter(detallecomputo__computo=computo, detallecomputo__cantidad_voto__isnull=False).distinct().count()
+
+        if mesas_totales == 0:
+            porcentaje_mesas_escrutadas = 0
+        else:
+            porcentaje_mesas_escrutadas = (mesas_escrutadas / mesas_totales) * 100
+
+        resultados_cargos = []
+
+        for cargo in cargos:
+            candidatos = CandidatoEleccion.objects.filter(
+                eleccion=computo.eleccion,
+                cargo=cargo
+            )
+
+            total_votos_cargo = DetalleComputo.objects.filter(
+                computo=computo,
+                candidato_eleccion__in=candidatos
+            ).aggregate(total=Sum('cantidad_voto'))['total']
+
+            if total_votos_cargo is None:
+                total_votos_cargo = 0
+
+            resultados_cargo = []
+
+            for candidato in candidatos:
+                cantidad_voto_por_mesa = DetalleComputo.objects.filter(
+                    computo=computo,
+                    candidato_eleccion=candidato
+                ).aggregate(total=Sum('cantidad_voto'))['total']
+
+                cantidad_voto = cantidad_voto_por_mesa if cantidad_voto_por_mesa is not None else 0
+
+                porcentaje = 0
+                if total_votos_cargo > 0:
+                    porcentaje = (cantidad_voto / total_votos_cargo) * 100
+
+                resultados_cargo.append({
+                    'candidato': candidato,
+                    'cantidad_voto': cantidad_voto,
+                    'porcentaje': porcentaje
+                })
+
+            resultados_cargo.sort(key=lambda x: x['cantidad_voto'], reverse=True)
+
+            resultados_cargos.append({
+                'cargo': cargo,
+                'resultados': resultados_cargo,
+                'total_votos': total_votos_cargo,
+            })
+
+        # Renderiza la plantilla HTML con los datos obtenidos
+        template = get_template('exportar_pdf_resultados_candidatos.html')
+        html_content = template.render({
+            'resultados_cargos': resultados_cargos,
+            'computo': computo,
+            'mesas_totales': mesas_totales,
+            'mesas_escrutadas': mesas_escrutadas,
+            'porcentaje_mesas_escrutadas': porcentaje_mesas_escrutadas
+        })
+
+        # Crea un objeto HTML a partir del contenido HTML renderizado
+        html = HTML(string=html_content)
+
+        # Genera el PDF
+        pdf_file = html.write_pdf()
+
+        # Crea una respuesta HTTP con el PDF generado
+        response = HttpResponse(pdf_file, content_type='application/pdf')
+
+        # Define el nombre del archivo PDF cuando se descargue
+        response['Content-Disposition'] = f'attachment; filename="resultados.pdf"'
+
+        return response

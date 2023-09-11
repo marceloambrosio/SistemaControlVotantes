@@ -5,7 +5,9 @@
 <br>
 
 <h1>Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}</h1>
-    
+<a href="{% url 'pdf_resultados_candidatos' computo.id %}" style="background-color: #468B97"  class="btn float-end">Imprimir resultados</a>
+<br>
+
 <br>
 
 <h6>Mesas escrutadas {{ mesas_escrutadas }} de {{ mesas_totales}}</h6>
