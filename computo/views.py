@@ -12,6 +12,21 @@ from weasyprint import HTML
 
 # Create your views here.
 
+class CircuitosHabilitadosView(View):
+    def get(self, request):
+        circuitos = request.user.circuitos.all()
+        computo = Computo.objects.filter(eleccion__circuito__in=circuitos).first()  # Obtén el primer objeto Computo (o ajusta la lógica según tus necesidades)
+
+        if computo:
+            computo_id = computo.id
+        else:
+            computo_id = None  # O proporciona un valor predeterminado en caso de que no haya un objeto Computo válido
+
+        context = {'circuitos': circuitos, 'computo_id': computo_id}
+        return render(request, 'circuito_habilitado.html', context)
+
+
+
 class ComputoMesaListView(ListView):
     model = Computo
     template_name = 'computo_mesa_list.html'

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 from control.models import Mesa, Circuito, Mesa, Persona, Eleccion
 from bocadeurna.models import BocaDeUrna, DetalleBocaDeUrna, CandidatoEleccion
+from computo.models import Computo
 import json
 
 # Create your views here.
@@ -119,7 +120,28 @@ class EstadoMesasBocaDeUrnaView(View):
     
 class CircuitosHabilitadosView(View):
     def get(self, request):
-        circuitos = request.user.circuitos.all()
-        context = {'circuitos': circuitos}
+        # Obtén los circuitos habilitados del usuario
+        circuitos_habilitados = request.user.circuitos.all()
+        
+        # Inicializa una lista para almacenar las elecciones con sus computo_ids
+        elecciones_con_computo = []
+        
+        # Recorre los circuitos habilitados para obtener las elecciones con computo_ids
+        for circuito in circuitos_habilitados:
+            # Obtén las elecciones relacionadas con el circuito
+            elecciones = circuito.eleccion_set.all()
+            
+            # Para cada elección, obtén el computo_id si existe y agrega la elección con el computo_id a la lista
+            for eleccion in elecciones:
+                computo = Computo.objects.filter(eleccion=eleccion).first()
+                if computo:
+                    eleccion.computo_id = computo.id
+                    elecciones_con_computo.append(eleccion)
+        
+        # Imprime las elecciones con computo_ids en la consola para depurar
+        for eleccion in elecciones_con_computo:
+            print(f"Eleccion: {eleccion.id}, Computo ID: {eleccion.computo_id}")
+        
+        context = {'elecciones': elecciones_con_computo}
         return render(request, 'circuitos/circuito_habilitado.html', context)
 

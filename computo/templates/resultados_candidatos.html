@@ -4,8 +4,10 @@
 
 <br>
 
-<h1>Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}</h1>
-<a href="{% url 'pdf_resultados_candidatos' computo.id %}" style="background-color: #468B97"  class="btn float-end">Imprimir resultados</a>
+<h1>Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}
+<button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuitos_habilitados_reportes' %}'">Volver</button>
+<a href="{% url 'pdf_resultados_candidatos' computo.id %}" style="background-color: #468B97"  class="btn">Imprimir resultados</a>
+</h1>
 <br>
 
 <br>
