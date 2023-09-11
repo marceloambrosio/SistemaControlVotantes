@@ -1,0 +1,52 @@
+{% extends 'control_base.html' %}
+
+{% block content %}
+
+<br>
+
+<h1>Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}</h1>
+    
+<br>
+
+<h6>Mesas escrutadas {{ mesas_escrutadas }} de {{ mesas_totales}}</h6>
+<div class="progress">
+    {% if porcentaje_mesas_escrutadas < 30 %}
+        <div class="progress-bar" role="progressbar" style="width: {{ porcentaje_mesas_escrutadas }}%; background-color: #EF6262;" aria-valuenow="{{ porcentaje_mesas_escrutadas }}" aria-valuemin="0" aria-valuemax="100">{{ porcentaje_mesas_escrutadas }}%</div>
+    {% elif porcentaje_mesas_escrutadas < 60 %}
+        <div class="progress-bar" role="progressbar" style="width: {{ porcentaje_mesas_escrutadas }}%; background-color: #F3AA60;" aria-valuenow="{{ porcentaje_mesas_escrutadas }}" aria-valuemin="0" aria-valuemax="100">{{ porcentaje_mesas_escrutadas }}%</div>
+    {% elif porcentaje_mesas_escrutadas == 100 %}
+        <div class="progress-bar" role="progressbar" style="width: {{ porcentaje_mesas_escrutadas }}%; background-color: #5DB75D;" aria-valuenow="{{ porcentaje_mesas_escrutadas }}" aria-valuemin="0" aria-valuemax="100">{{ porcentaje_mesas_escrutadas }}%</div>
+    {% else %}
+        <div class="progress-bar" role="progressbar" style="width: {{ porcentaje_mesas_escrutadas }}%; background-color: #468B97;" aria-valuenow="{{ porcentaje_mesas_escrutadas }}" aria-valuemin="0" aria-valuemax="100">{{ porcentaje_mesas_escrutadas }}%</div>
+    {% endif %}
+</div>
+
+<br>
+
+{% for resultado_cargo in resultados_cargos %}
+<h2>{{ resultado_cargo.cargo }} </h2>
+Total de votos: {{ resultado_cargo.total_votos }}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Candidato</th>
+            <th>Partido</th>
+            <th>Cantidad de Votos</th>
+            <th>Porcentaje</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for resultado in resultado_cargo.resultados %}
+        <tr>
+            <td>{{ resultado.candidato.candidato.nombre }} {{ resultado.candidato.candidato.apellido }}</td>
+            <td>{{ resultado.candidato.candidato.partido.nombre }}</td>
+            <td>{{ resultado.cantidad_voto }}</td>
+            <td>{{ resultado.porcentaje|floatformat:2 }}%</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+{% endfor %}
+
+{% endblock %}

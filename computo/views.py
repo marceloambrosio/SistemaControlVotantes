@@ -138,3 +138,72 @@ class DetalleComputoMesaView(View):
             detalle.save()
 
         return redirect('computo_mesa_list', computo_id=computo_id)
+    
+
+class ResultadosCandidatosView(View):
+    template_name = 'resultados_candidatos.html'
+
+    def get(self, request, computo_id):
+        computo = Computo.objects.get(pk=computo_id)
+        cargos = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct()
+
+        mesas_totales = Mesa.objects.filter(escuela__circuito=computo.eleccion.circuito).count()
+        mesas_escrutadas = DetalleComputo.objects.filter(computo=computo, cantidad_voto__isnull=False).values('mesa__escuela__circuito').distinct().count()
+
+
+        if mesas_totales == 0:
+            porcentaje_mesas_escrutadas = 0
+        else:
+            porcentaje_mesas_escrutadas = (mesas_escrutadas / mesas_totales) * 100
+
+        resultados_cargos = []
+
+        for cargo in cargos:
+            candidatos = CandidatoEleccion.objects.filter(
+                eleccion=computo.eleccion,
+                cargo=cargo
+            )
+
+            total_votos_cargo = DetalleComputo.objects.filter(
+                computo=computo,
+                candidato_eleccion__in=candidatos
+            ).aggregate(total=Sum('cantidad_voto'))['total']
+
+            if total_votos_cargo is None:
+                total_votos_cargo = 0
+
+            resultados_cargo = []
+
+            for candidato in candidatos:
+                cantidad_voto_por_mesa = DetalleComputo.objects.filter(
+                    computo=computo,
+                    candidato_eleccion=candidato
+                ).aggregate(total=Sum('cantidad_voto'))['total']
+
+                cantidad_voto = cantidad_voto_por_mesa if cantidad_voto_por_mesa is not None else 0
+
+                porcentaje = 0
+                if total_votos_cargo > 0:
+                    porcentaje = (cantidad_voto / total_votos_cargo) * 100
+
+                resultados_cargo.append({
+                    'candidato': candidato,
+                    'cantidad_voto': cantidad_voto,
+                    'porcentaje': porcentaje
+                })
+
+            resultados_cargo.sort(key=lambda x: x['cantidad_voto'], reverse=True)
+
+            resultados_cargos.append({
+                'cargo': cargo,
+                'resultados': resultados_cargo,
+                'total_votos': total_votos_cargo,
+            })
+
+        return render(request, self.template_name, {
+            'resultados_cargos': resultados_cargos,
+            'computo': computo,
+            'mesas_totales': mesas_totales,
+            'mesas_escrutadas': mesas_escrutadas,
+            'porcentaje_mesas_escrutadas': porcentaje_mesas_escrutadas
+        })
