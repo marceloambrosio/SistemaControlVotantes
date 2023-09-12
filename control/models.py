@@ -65,9 +65,10 @@ class Persona(models.Model):
     
 class Cargo(models.Model):
     titulo = models.CharField()
+    orden_cargo = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.titulo
+        return self.titulo + " (Orden: " + str(self.orden_cargo) + ")"
     
 class TipoEleccion(models.Model):
     nombre = models.CharField()

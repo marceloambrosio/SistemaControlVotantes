@@ -33,13 +33,13 @@
     </style>
 </head>
 <body>
-    <h1>Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}</h1>
+    <h2 style="text-align: center;">Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}</h2>
     
-    <h4>Mesas escrutadas {{ mesas_escrutadas }} de {{ mesas_totales }} ({{porcentaje_mesas_escrutadas}}%)</h4>
+    <h4 style="text-align: center;">Mesas escrutadas {{ mesas_escrutadas }} de {{ mesas_totales }} ({{porcentaje_mesas_escrutadas}}%)</h4>
 
+    <br>
     {% for resultado_cargo in resultados_cargos %}
-    <h4>{{ resultado_cargo.cargo }} </h4>
-    Total de votos: {{ resultado_cargo.total_votos }}
+    <p style="text-align: center; background-color: black; color: white;padding: 7px; "><b>{{ resultado_cargo.cargo.titulo }}</b> (Total de votos: {{ resultado_cargo.total_votos }})</p>
     <table class="table table-all " style="width: 100%;">
         <thead>
             <tr>
@@ -60,6 +60,7 @@
             {% endfor %}
         </tbody>
     </table>
+    <br>
     {% endfor %}
 </body>
 </html>

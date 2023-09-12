@@ -3,7 +3,7 @@
 {% block content %}
 
 <br>
-<h1>Mesas para el Computo de {{ computo.eleccion.circuito.localidad }}  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuitos_habilitados_computo' %}'">Volver</button></h1>
+<h1>Mesas - Computo {{ computo.eleccion.circuito.localidad }} - {{ computo.eleccion.fecha.year }}/{{ computo.eleccion.fecha.month }}/{{ computo.eleccion.fecha.day }}  <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuitos_habilitados_computo' %}'">Volver</button></h1>
 <br>
 <table class="table table-hover">
     <thead>

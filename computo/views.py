@@ -44,10 +44,11 @@ class ComputoMesaListView(ListView):
             seccion = computo.eleccion.circuito.seccion
 
             # Obtén los cargos disponibles para esta elección
-            cargos_disponibles = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct()
+            cargos_disponibles = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct().order_by('orden_cargo')
+
 
             # Usamos la Sección para obtener todas las mesas
-            mesas = Mesa.objects.filter(escuela__circuito__seccion=seccion)
+            mesas = Mesa.objects.filter(escuela__circuito__seccion=seccion).order_by('num_mesa')
 
             # Calcula el porcentaje de carga para cada mesa
             for mesa in mesas:
@@ -163,7 +164,7 @@ class ResultadosCandidatosView(View):
 
     def get(self, request, computo_id):
         computo = Computo.objects.get(pk=computo_id)
-        cargos = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct()
+        cargos = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct().order_by('orden_cargo')
 
         mesas_totales = Mesa.objects.filter(escuela__circuito=computo.eleccion.circuito).count()
         mesas_escrutadas = Mesa.objects.filter(detallecomputo__computo=computo, detallecomputo__cantidad_voto__isnull=False).distinct().count()
@@ -232,7 +233,7 @@ class ResultadosCandidatosView(View):
 class ExportarPDFResultadosCandidatosView(View):
     def get(self, request, computo_id):
         computo = Computo.objects.get(pk=computo_id)
-        cargos = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct()
+        cargos = Cargo.objects.filter(candidatoeleccion__eleccion=computo.eleccion).distinct().order_by('orden_cargo')
 
         mesas_totales = Mesa.objects.filter(escuela__circuito=computo.eleccion.circuito).count()
         mesas_escrutadas = Mesa.objects.filter(detallecomputo__computo=computo, detallecomputo__cantidad_voto__isnull=False).distinct().count()
@@ -302,10 +303,8 @@ class ExportarPDFResultadosCandidatosView(View):
         # Genera el PDF
         pdf_file = html.write_pdf()
 
-        # Crea una respuesta HTTP con el PDF generado
+        # Crea una respuesta HTTP con el PDF generado y ábrelo en línea en lugar de descargarlo
         response = HttpResponse(pdf_file, content_type='application/pdf')
-
-        # Define el nombre del archivo PDF cuando se descargue
-        response['Content-Disposition'] = f'attachment; filename="resultados.pdf"'
+        response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
 
         return response

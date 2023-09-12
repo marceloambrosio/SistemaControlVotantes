@@ -68,7 +68,8 @@ class CustomUserAdmin(BaseUserAdmin):
 
 class CargoAdmin(admin.ModelAdmin):
     search_fields = ('titulo'),
-    ordering = ['titulo']
+    ordering = ('orden_cargo'),
+    list_display = ('titulo', 'orden_cargo')
 
 class TipoEleccionAdmin(admin.ModelAdmin):
     search_fields = ('nombre'),
