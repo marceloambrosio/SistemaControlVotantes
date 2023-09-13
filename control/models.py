@@ -41,7 +41,7 @@ class Mesa(models.Model):
     escuela = models.ForeignKey(Escuela, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Mesa Nº " + str(self.num_mesa).zfill(4) + " - " + self.escuela.circuito.localidad
+        return "Mesa Nº " + str(self.num_mesa).zfill(4) + " - " + self.escuela.circuito.localidad + " - " + self.escuela.nombre + " (ID: " + str(self.escuela.id) + ")"
     
     def calcular_cantidad_personas(self):
         return self.persona_set.count()
