@@ -268,15 +268,15 @@ class ExportarPDFPersonasSinVotoView(View):
     
 
 class ExportarPDFPersonasSinVotoMesaView(View):
-    def get(self, request, circuito_id, num_mesa):
-        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa, voto=False).order_by('num_orden')
+    def get(self, request, circuito_id, mesa_id):
+        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=mesa_id, voto=False).order_by('num_orden')
         circuito = Circuito.objects.get(pk=circuito_id)
-        mesa = Mesa.objects.get(pk=num_mesa)
+        mesa = Mesa.objects.get(pk=mesa_id)
 
         context = {
             'persona_list': personas,
             'circuito_id': circuito_id,
-            'num_mesa': num_mesa,
+            'num_mesa': mesa_id,
             'localidad': circuito.localidad
         }
 
