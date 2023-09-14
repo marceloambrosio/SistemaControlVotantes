@@ -91,7 +91,8 @@ class PadronListView(View):
 
             # Devuelve el PDF como respuesta
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename="{} - Mesa {}.pdf"'.format(circuito.localidad, num_mesa)
+            response['Content-Disposition'] = 'filename="{} - Mesa {}.pdf"'.format(circuito.localidad, mesa.num_mesa)
+
             response.write(pdf)
 
             return response
