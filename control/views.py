@@ -68,7 +68,7 @@ class PadronListView(View):
     def get(self, request, circuito_id, mesa_id):
         circuito = Circuito.objects.get(pk=circuito_id)
         mesa = Mesa.objects.get(pk=mesa_id)  # Obtén el objeto mesa a partir del id
-        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=mesa.num_mesa).order_by('num_orden')
+        personas = Persona.objects.filter(mesa_id=mesa_id).order_by('num_orden')
 
         context = {
             'persona_list': personas,
