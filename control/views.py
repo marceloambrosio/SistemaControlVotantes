@@ -79,7 +79,8 @@ class PadronListView(View):
             'persona_list': personas,
             'circuito_id': circuito_id,
             'num_mesa': num_mesa,
-            'localidad': circuito.localidad
+            'localidad': circuito.localidad,
+            'mesa_id': int(mesa_id)
         }
 
         if 'exportar_pdf' in request.path:
