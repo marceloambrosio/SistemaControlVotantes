@@ -67,8 +67,8 @@ class PadronDatatableView(BaseDatatableView):
 class PadronListView(View):
     def get(self, request, circuito_id, mesa_id):
         circuito = Circuito.objects.get(pk=circuito_id)
-        mesa = Mesa.objects.get(pk=mesa_id)  # Obtén el objeto mesa a partir del id
-        personas = Persona.objects.filter(mesa_id=mesa_id).order_by('num_orden')
+        mesa = Mesa.objects.get(num_mesa=mesa_id)  # Obtén el objeto mesa a partir del número de mesa
+        personas = Persona.objects.filter(mesa=mesa).order_by('num_orden')
 
         context = {
             'persona_list': personas,
@@ -268,15 +268,15 @@ class ExportarPDFPersonasSinVotoView(View):
     
 
 class ExportarPDFPersonasSinVotoMesaView(View):
-    def get(self, request, circuito_id, mesa_id):
-        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=mesa_id, voto=False).order_by('num_orden')
+    def get(self, request, circuito_id, num_mesa):
+        personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=num_mesa, voto=False).order_by('num_orden')
         circuito = Circuito.objects.get(pk=circuito_id)
-        mesa = Mesa.objects.get(pk=mesa_id)
+        mesa = Mesa.objects.get(pk=num_mesa)
 
         context = {
             'persona_list': personas,
             'circuito_id': circuito_id,
-            'num_mesa': mesa_id,
+            'num_mesa': num_mesa,
             'localidad': circuito.localidad
         }
 
