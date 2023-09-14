@@ -67,13 +67,18 @@ class PadronDatatableView(BaseDatatableView):
 class PadronListView(View):
     def get(self, request, circuito_id, mesa_id):
         circuito = Circuito.objects.get(pk=circuito_id)
-        mesa = Mesa.objects.get(num_mesa=mesa_id)  # Obtén el objeto mesa a partir del número de mesa
+        
+        # Obtén el num_mesa de la mesa utilizando el mesa_id
+        mesa = Mesa.objects.get(pk=mesa_id)
+        num_mesa = mesa.num_mesa
+
+        # Filtra las personas que tienen el mismo mesa_id en su atributo mesa
         personas = Persona.objects.filter(mesa=mesa).order_by('num_orden')
 
         context = {
             'persona_list': personas,
             'circuito_id': circuito_id,
-            'num_mesa': mesa.num_mesa,
+            'num_mesa': num_mesa,
             'localidad': circuito.localidad
         }
 
@@ -86,7 +91,7 @@ class PadronListView(View):
 
             # Devuelve el PDF como respuesta
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename="{} - Mesa {}.pdf"'.format(circuito.localidad, mesa.num_mesa)
+            response['Content-Disposition'] = 'filename="{} - Mesa {}.pdf"'.format(circuito.localidad, num_mesa)
             response.write(pdf)
 
             return response
