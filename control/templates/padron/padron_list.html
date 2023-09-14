@@ -6,7 +6,7 @@
 <div class="padron-header">
     <h1>Padron Mesa Nº {{ num_mesa }} - {{ localidad }} </h1>
     <button class="btn" style="background-color: #EF6262" onclick="location.href='{% url 'circuito_detail' circuito_id=circuito_id %}'">Volver</button>
-    <a class="btn" style="background-color: #468B97" href="{% url 'exportar_pdf' circuito_id=circuito_id num_mesa=num_mesa %}" target="_blank">PDF mesa completa</a>
+    <a class="btn" style="background-color: #468B97" href="{% url 'exportar_pdf' circuito_id=circuito_id mesa_id=mesa_id %}" target="_blank">PDF mesa completa</a>
     <a class="btn" style="background-color: #468B97" href="{% url 'exportar_pdf_personas_sin_voto_mesa' circuito_id=circuito_id num_mesa=num_mesa %}" target="_blank">PDF no votantes</a>
 
   </div>
