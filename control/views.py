@@ -137,29 +137,25 @@ def voto_no_existe(request):
 
 @user_passes_test(user_in_group, login_url='login')
 def solicitar_numero_mesa(request):
-    user = request.user  # Obtén el usuario actual
+    user = request.user
+    mesas = Mesa.objects.filter(escuela__circuito__in=user.circuitos.all())
     
-    # Asumiendo que solo hay un circuito asociado al usuario
-    circuito = user.circuitos.first()
+    if request.method == 'POST':
+        form = NumeroMesaForm(request.POST, mesas=mesas)
+        if form.is_valid():
+            numero_mesa = form.cleaned_data['numero_mesa']
+            mesa = mesas.filter(num_mesa=numero_mesa).first()
+            if mesa:
+                return redirect('cambiar_voto', mesa_id=mesa.id) 
+            else:
+                return redirect('mesa_no_existe')
+    else:
+        form = NumeroMesaForm(mesas=mesas)
     
-    if circuito:
-        mesas = Mesa.objects.filter(escuela__circuito=circuito)
-        
-        if request.method == 'POST':
-            form = NumeroMesaForm(request.POST)
-            if form.is_valid():
-                numero_mesa = form.cleaned_data['numero_mesa']
-                mesa = mesas.filter(num_mesa=numero_mesa).first()
-                if mesa:
-                    return redirect('cambiar_voto', mesa_id=mesa.id)
-        
-        form = NumeroMesaForm()
-    
-        context = {
-            'form': form,
-            'mesas': mesas,
-        }
-        return render(request, 'mesa/solicitar_numero_mesa.html', context)
+    context = {
+        'form': form
+    }
+    return render(request, 'mesa/solicitar_numero_mesa.html', context)
 
 @user_passes_test(user_in_group, login_url='login')
 def mesa_no_existe(request):
