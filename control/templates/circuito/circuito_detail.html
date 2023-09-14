@@ -44,7 +44,7 @@
     {% endif %}
       </div></td>
       <td>
-        <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'padron_list' circuito_id=mesa.escuela.circuito.num_circuito num_mesa=mesa.id %}'">Ver padron</button>
+        <button class="btn" style="background-color: #468B97" type="button" onclick="location.href='{% url 'padron_list' circuito_id=circuito_id num_mesa=num_mesa %}'">Ver padron</button>
       </td>
     </tr>
 {% endfor %}
