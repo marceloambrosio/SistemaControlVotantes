@@ -65,9 +65,9 @@ class PadronDatatableView(BaseDatatableView):
     
 
 class PadronListView(View):
-    def get(self, request, circuito_id, num_mesa):
+    def get(self, request, circuito_id, mesa_id):
         circuito = Circuito.objects.get(pk=circuito_id)
-        mesa = Mesa.objects.get(id=num_mesa)  # Obtén el objeto mesa a partir del id
+        mesa = Mesa.objects.get(pk=mesa_id)  # Obtén el objeto mesa a partir del id
         personas = Persona.objects.filter(mesa__escuela__circuito_id=circuito_id, mesa_id=mesa.num_mesa).order_by('num_orden')
 
         context = {
@@ -159,7 +159,7 @@ class CircuitoDetailView(View):
         circuito = get_object_or_404(Circuito, pk=circuito_id)
         if circuito in request.user.circuitos.all():
             # El usuario tiene acceso al circuito, continúa con la lógica de la vista
-            mesas = Mesa.objects.filter(escuela__circuito=circuito).annotate(votos_count=Count('persona', filter=Q(persona__voto=True)))
+            mesas = Mesa.objects.filter(escuela__circuito=circuito).annotate(votos_count=Count('persona', filter=Q(persona__voto=True))).order_by('num_mesa')
 
             for mesa in mesas:
                 persona_count = mesa.persona_set.count()
