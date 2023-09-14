@@ -182,7 +182,6 @@ class CircuitoDetailView(View):
                 'mesas': mesas,
                 'form': form,
                 'porcentaje_votos_circuito': calcular_porcentaje_votos_circuito(circuito),  # Agrega el porcentaje de votos del circuito al contexto
-                'num_mesa': None  # Inicializa num_mesa como None en el contexto
             }
             return render(request, 'circuito/circuito_detail.html', context)
         else:
