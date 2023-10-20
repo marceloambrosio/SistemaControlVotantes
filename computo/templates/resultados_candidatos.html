@@ -2,6 +2,15 @@
 
 {% block content %}
 
+<style>
+    .cuadrado-color {
+    width: 13px; /* Ancho del cuadradito */
+    height: 13px; /* Alto del cuadradito */
+    display: inline-block; /* Para asegurarse de que los elementos no se superpongan */
+    background-color: #000000; /* Color en hexadecimal del candidato */
+}
+</style>
+
 <br>
 
 <h1>Elección {{ computo.eleccion.tipo_eleccion.nombre }} {{ computo.eleccion.circuito.localidad }} - {{ computo.fecha.year }}/{{ computo.fecha.month }}/{{ computo.fecha.day }}
@@ -43,7 +52,7 @@ Total de votos: {{ resultado_cargo.total_votos }}
         {% for resultado in resultado_cargo.resultados %}
         <tr>
             <td>{{ resultado.candidato.candidato.nombre }} {{ resultado.candidato.candidato.apellido }}</td>
-            <td>{{ resultado.candidato.candidato.partido.nombre }}</td>
+            <td><span class="cuadrado-color" style="background-color: {{ resultado.candidato.candidato.color }};"></span> {{ resultado.candidato.candidato.partido.nombre }}</td>
             <td>{{ resultado.cantidad_voto }}</td>
             <td>{{ resultado.porcentaje|floatformat:2 }}%</td>
         </tr>
