@@ -51,6 +51,14 @@ Total de votos: {{ resultado_cargo.total_votos }}
     </tbody>
 </table>
 <br>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Refrescar la página cada 60 segundos
+    setTimeout(function() {
+            location.reload();
+        }, 60000);
+</script>
 {% endfor %}
 
 {% endblock %}

@@ -176,6 +176,8 @@ class ResultadosCandidatosView(View):
         else:
             porcentaje_mesas_escrutadas = (mesas_escrutadas / mesas_totales) * 100
 
+            porcentaje_mesas_escrutadas = round(porcentaje_mesas_escrutadas, 2)
+
         resultados_cargos = []
 
         for cargo in cargos:
@@ -205,6 +207,8 @@ class ResultadosCandidatosView(View):
                 porcentaje = 0
                 if total_votos_cargo > 0:
                     porcentaje = (cantidad_voto / total_votos_cargo) * 100
+
+                porcentaje = round(porcentaje, 2)
 
                 resultados_cargo.append({
                     'candidato': candidato,
@@ -243,6 +247,8 @@ class ExportarPDFResultadosCandidatosView(View):
         else:
             porcentaje_mesas_escrutadas = (mesas_escrutadas / mesas_totales) * 100
 
+            porcentaje_mesas_escrutadas = round(porcentaje_mesas_escrutadas, 2)
+
         resultados_cargos = []
 
         for cargo in cargos:
@@ -272,6 +278,8 @@ class ExportarPDFResultadosCandidatosView(View):
                 porcentaje = 0
                 if total_votos_cargo > 0:
                     porcentaje = (cantidad_voto / total_votos_cargo) * 100
+
+                    porcentaje = round(porcentaje, 2)
 
                 resultados_cargo.append({
                     'candidato': candidato,
