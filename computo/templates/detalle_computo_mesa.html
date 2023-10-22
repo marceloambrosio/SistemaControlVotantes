@@ -23,15 +23,46 @@
             <td>{{ candidato.candidato.nombre }} {{ candidato.candidato.apellido }}</td>
             <td>{{ candidato.candidato.partido.nombre }}</td>
             <td>
-                <input class="form-control" type="number" name="cantidad_voto_{{ candidato.candidato.id }}" value="{{ candidato.cantidad_voto}}">
+                <input class="form-control voto-input" type="number" name="cantidad_voto_{{ candidato.candidato.id }}" value="{{ candidato.cantidad_voto}}">
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+    <div class="text-end">
+      <hr> <!-- Línea separadora -->
+      <p>Total de Votos: <span id="total-de-votos">0</span></p>
+    </div>
     <button id="cargar-btn" class="btn float-end" style="background-color: #468B97" type="submit">Cargar votos</button>
     <button type="button" id="completar-con-0" class="btn float-end" style="background-color: #F3AA60">Completar con 0</button>
   </form>
+  
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const votosInputs = document.querySelectorAll('.voto-input');
+      const totalDeVotosSpan = document.getElementById('total-de-votos');
+  
+      // Función para calcular y mostrar el total de votos
+      function calcularTotalDeVotos() {
+        let total = 0;
+        votosInputs.forEach(input => {
+          total += parseInt(input.value) || 0;
+        });
+        totalDeVotosSpan.textContent = total;
+      }
+  
+      // Escuchar cambios en los input de votos
+      votosInputs.forEach(input => {
+        input.addEventListener('input', calcularTotalDeVotos);
+      });
+  
+      // Calcular el total inicial
+      calcularTotalDeVotos();
+    });
+  </script>
+  
+  
 
   <style>
     .padron-header {
